@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: tethysapp-hmfv
+Version: 1.0.0
+Summary: Flood map viewer that works in conjunction with Streamflow Prediction Tool API.
+Home-page: tethys.byu.edu
+Author: Sarva Pulla, Christian Kesler
+Author-email: pulla@byu.edu
+License: BSD2
+Description: UNKNOWN
+Platform: UNKNOWN
