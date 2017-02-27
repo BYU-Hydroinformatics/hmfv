@@ -1,0 +1,17 @@
+{% extends "hmfv/base.html" %}
+{% load staticfiles %}
+
+{% load tethys_gizmos %}
+{% block app_content %}
+<h5>Add Watershed</h5>
+    {% gizmo text_input watershed_name_input %}
+    {% gizmo text_input service_folder_input %}
+    {% gizmo text_input spt_watershed_input %}
+    {% gizmo text_input spt_reach_id_input %}
+
+
+{% endblock %}
+
+{% block app_actions %}
+
+{% endblock %}

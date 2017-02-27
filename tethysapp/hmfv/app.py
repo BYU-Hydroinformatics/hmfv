@@ -27,6 +27,9 @@ class HimalayaFloodMapVisualizer(TethysAppBase):
         url_maps = (UrlMap(name='home',
                            url='hmfv',
                            controller='hmfv.controllers.home'),
+                    UrlMap(name='add-watershed',
+                           url='hmfv/add-watershed',
+                           controller='hmfv.controllers.add_watershed'),
         )
 
         return url_maps

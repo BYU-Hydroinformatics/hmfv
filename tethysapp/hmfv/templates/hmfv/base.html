@@ -13,16 +13,13 @@
 {% block app_title %}{{ tethys_app.name }}{% endblock %}
 
 {% block app_navigation_items %}
-  <li class="title">App Navigation</li>
-  <li class="active"><a href="">Home</a></li>
-  <li><a href="">Jobs</a></li>
-  <li><a href="">Results</a></li>
-  <li class="title">Steps</li>
-  <li><a href="">1. The First Step</a></li>
-  <li><a href="">2. The Second Step</a></li>
-  <li><a href="">3. The Third Step</a></li>
-  <li class="separator"></li>
-  <li><a href="">Get Started</a></li>
+<li class="title">App Navigation</li>
+<li {% if request.path == '/apps/hmfv/' %} class="active" {% endif %}><a href="{% url 'hmfv:home' %}">Select an Area of Interest</a></li>
+{% if user.is_superuser or user.is_staff %}
+<li class="title">Configuration</li>
+<li {% if 'add-watershed' in request.path  %} class="active" {% endif %}><a href="{% url 'hmfv:add-watershed' %}">Add a Watershed</a></li>
+{% endif %}
+
 {% endblock %}
 
 {% block app_content %}
