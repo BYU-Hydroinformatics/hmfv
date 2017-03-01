@@ -22,7 +22,7 @@ def add_watershed(request):
                                      icon_append='glyphicon glyphicon-home',
                                      )
     service_folder_input = TextInput(display_text='ArcGIS Server REST Service Directory',
-                                     name='watershed-name-input',
+                                     name='service-folder-input',
                                      placeholder='http://geoserver.byu.edu/arcgis/rest/services/Nepal_Western',
                                      icon_append='glyphicon glyphicon-link',)
     spt_watershed_input = TextInput(display_text='Streamflow Prediction Tool Watershed',
@@ -36,6 +36,12 @@ def add_watershed(request):
                                      icon_append='glyphicon glyphicon-tag',
                                      append='For retrieving forecasts')
 
-    context = {"watershed_name_input":watershed_name_input,"service_folder_input":service_folder_input,"spt_watershed_input":spt_watershed_input,"spt_reach_id_input":spt_reach_id_input}
+    add_button = Button(display_text='Add Watershed',
+                        icon='glyphicon glyphicon-plus',
+                        style='success',
+                        name='submit-add-watershed',
+                        attributes={'id': 'submit-add-watershed'}, )
+
+    context = {"watershed_name_input":watershed_name_input,"service_folder_input":service_folder_input,"spt_watershed_input":spt_watershed_input,"spt_reach_id_input":spt_reach_id_input,"add_button":add_button}
 
     return render(request, 'hmfv/add_watershed.html', context)

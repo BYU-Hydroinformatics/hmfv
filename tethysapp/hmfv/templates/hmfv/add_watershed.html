@@ -4,14 +4,22 @@
 {% load tethys_gizmos %}
 {% block app_content %}
 <h5>Add Watershed</h5>
+<div id="message" class="alert alert-danger hidden" role="alert"></div>
     {% gizmo text_input watershed_name_input %}
     {% gizmo text_input service_folder_input %}
     {% gizmo text_input spt_watershed_input %}
     {% gizmo text_input spt_reach_id_input %}
+    <div class="form-group rc_upload">
+        <label class="control-label" for="rc-upload-input">Rating Curve CSV File (Required)</label>
+        <input id="rc-upload-input" name="rc-upload-input" type="file" accept=".csv" >
+    </div>
+
+    {% gizmo button add_button %}
 
 
 {% endblock %}
 
-{% block app_actions %}
-
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'hmfv/js/add_watershed.js' %}" type="text/javascript"></script>
 {% endblock %}

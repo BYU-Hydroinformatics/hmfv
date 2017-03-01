@@ -30,6 +30,9 @@ class HimalayaFloodMapVisualizer(TethysAppBase):
                     UrlMap(name='add-watershed',
                            url='hmfv/add-watershed',
                            controller='hmfv.controllers.add_watershed'),
+                    UrlMap(name='add-watershed-ajax',
+                           url='hmfv/add-watershed/submit',
+                           controller='hmfv.ajax_controllers.watershed_add'),
         )
 
         return url_maps
