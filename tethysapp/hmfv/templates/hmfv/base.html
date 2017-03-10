@@ -18,6 +18,7 @@
 {% if user.is_superuser or user.is_staff %}
 <li class="title">Configuration</li>
 <li {% if 'add-watershed' in request.path  %} class="active" {% endif %}><a href="{% url 'hmfv:add-watershed' %}">Add a Watershed</a></li>
+<li {% if 'manage-watersheds' in request.path  %} class="active" {% endif %}><a href="{% url 'hmfv:manage-watersheds' %}">Manage Watersheds</a></li>
 {% endif %}
 
 {% endblock %}

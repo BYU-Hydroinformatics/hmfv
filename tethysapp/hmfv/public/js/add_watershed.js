@@ -1,6 +1,6 @@
 /*****************************************************************************
  * FILE:    Add Watershed
- * DATE:    2 FEBRUARY 2017
+ * DATE:    2 March 2017
  * AUTHOR: Sarva Pulla
  * COPYRIGHT: (c) Brigham Young University 2017
  * LICENSE: BSD 2-Clause
@@ -48,6 +48,7 @@ var HMFV_ADD_WATERSHED = (function() {
             $("#watershed-name-input").val('');
             $("#service-folder-input").val('');
             $("#spt-watershed-name-input").val('');
+            $("#spt-basin-name-input").val('');
             $("#spt-reach-id-input").val('');
             $("#rc-upload-input").val('');
             addSuccessMessage('Watershed Upload Complete!');
@@ -74,15 +75,60 @@ var HMFV_ADD_WATERSHED = (function() {
     $(function() {
         init_jquery();
 
+        $("#spt-reach-id-input").blur(function(){
+            var spt_reach = $("#spt-reach-id-input").val();
+            test(spt_reach);
+
+            function isNormalInteger(str) {
+                return /^\+?(0|[1-9]\d*)$/.test(str);
+            }
+            function test(str, expect) {
+                if(!isNormalInteger(str)){
+                    addErrorMessage("SPT reach is not a number");
+                }else{
+                    reset_alert();
+                }
+            }
+        });
+
+        $("#service-folder-input").blur(function(){
+            var service_folder = $("#service-folder-input").val();
+            if (service_folder.substr(-1) !== "/") {
+                service_folder = service_folder.concat("/");
+            }
+            $.ajax({
+                url: service_folder+'?f=json&callback=',
+                type: 'GET',
+                dataType: 'json',
+                success: function(result){
+                    if("services" in result){
+                        addSuccessMessage('Valid ArcGIS REST Service');
+                    }else{
+                        addErrorMessage("Please check your ArcGIS REST Service Folder Link!");
+                    }
+                },
+                error: function(result){
+                    addErrorMessage("Please check your ArcGIS REST Service Folder Link!");
+                }
+            });
+
+        });
+
+
         add_watershed = function(){
 
             reset_alert();
 
             var watershed_name = $("#watershed-name-input").val();
             var service_folder = $("#service-folder-input").val();
+            if (service_folder.substr(-1) !== "/") {
+                service_folder = service_folder.concat("/");
+            }
             var spt_watershed = $("#spt-watershed-name-input").val();
+            var spt_basin = $("#spt-basin-name-input").val();
             var spt_reach = $("#spt-reach-id-input").val();
             var rating_curve_files = $("#rc-upload-input")[0].files;
+
 
             if(watershed_name == ""){
                 addErrorMessage("Display Name cannot be empty!");
@@ -97,7 +143,15 @@ var HMFV_ADD_WATERSHED = (function() {
                 reset_alert();
             }
             if(spt_watershed == ""){
+
                 addErrorMessage("Streamflow Prediction Tool Watershed cannot be empty!");
+                return false;
+            }else{
+                reset_alert();
+            }
+            if(spt_basin == ""){
+
+                addErrorMessage("Streamflow Prediction Tool Watershed Subbasin cannot be empty!");
                 return false;
             }else{
                 reset_alert();
@@ -119,6 +173,7 @@ var HMFV_ADD_WATERSHED = (function() {
             data.append("display_name",watershed_name);
             data.append("service_folder",service_folder);
             data.append("spt_watershed",spt_watershed);
+            data.append("spt_basin",spt_basin);
             data.append("spt_reach",spt_reach);
             for(var i=0;i < rating_curve_files.length; i++){
                 data.append("rating_curve",rating_curve_files[i]);

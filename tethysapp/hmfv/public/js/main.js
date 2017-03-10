@@ -1,4 +1,3 @@
-//get cookie
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
@@ -23,7 +22,6 @@ function csrfSafeMethod(method) {
 
 //add csrf token to appropriate ajax requests
 $(function() {
-    crossDomain: false,
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -31,7 +29,56 @@ $(function() {
             }
         }
     });
-});
+}); //document ready
+
+//add warning message to #message div
+function addWarningMessage(error, div_id) {
+    var div_id_string = '#message';
+    if (typeof div_id != 'undefined') {
+        div_id_string = '#'+div_id;
+    }
+    $(div_id_string).html(
+      '<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>' +
+      '<span class="sr-only">Warning:</span> ' + error
+    )
+    .removeClass('hidden')
+    .removeClass('alert-success')
+    .removeClass('alert-info')
+    .removeClass('alert-danger')
+    .addClass('alert')
+    .addClass('alert-warning');
+
+}
+
+//send data to database with error messages
+function ajax_update_database(ajax_url, ajax_data, div_id) {
+    //backslash at end of url is requred
+    if (ajax_url.substr(-1) !== "/") {
+        ajax_url = ajax_url.concat("/");
+    }
+    //update database
+    var xhr = jQuery.ajax({
+        type: "POST",
+        url: ajax_url,
+        dataType: "json",
+        data: ajax_data
+    });
+    xhr.done(function(data) {
+        if("success" in data) {
+            appendSuccessMessage(data['success'], div_id);
+        } else {
+            addWarningMessage("Submission failed");
+            appendErrorMessage(data['error'], div_id);
+        }
+    })
+    .fail(function(xhr, status, error) {
+        addWarningMessage("Submission failed");
+        appendErrorMessage(error, div_id);
+        console.log(xhr.responseText);
+    });
+
+    return xhr;
+}
 
 function ajax_update_database_with_file(ajax_url, ajax_data,div_id) {
     //backslash at end of url is required
@@ -55,7 +102,7 @@ function ajax_update_database_with_file(ajax_url, ajax_data,div_id) {
         }
     })
     .fail(function(xhr, status, error) {
-        appendErrorMessage(xhr.responseText,div_id);
+
         console.log(xhr.responseText);
 
     });
@@ -131,3 +178,32 @@ function addErrorMessage(error, div_id) {
 
 }
 
+//delete row data
+function deleteRowData(submit_button, data, div_id) {
+    if (window.confirm("Are you sure?")) {
+        var parent_row = submit_button.parent().parent().parent();
+        if (typeof div_id == 'undefined') {
+            div_id = 'message';
+        }
+        //give user information
+        // addInfoMessage("Deleting Data. Please Wait.", div_id);
+        var submit_button_html = submit_button.html();
+        submit_button.text('Deleting ...');
+
+        var xhr = ajax_update_database("delete",data);
+        xhr.done(function(data) {
+            if ('success' in data) {
+                parent_row.remove();
+                addSuccessMessage(data['success'], div_id);
+            }
+        })
+        .fail(function(xhr, status, error) {
+            addErrorMessage(error, div_id);
+        })
+        .always(function(){
+            submit_button.html(submit_button_html);
+        });
+        return xhr;
+    }
+    return null;
+}

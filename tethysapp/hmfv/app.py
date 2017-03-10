@@ -1,5 +1,5 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
-
+from tethys_sdk.stores import PersistentStore
 
 class HimalayaFloodMapVisualizer(TethysAppBase):
     """
@@ -27,12 +27,43 @@ class HimalayaFloodMapVisualizer(TethysAppBase):
         url_maps = (UrlMap(name='home',
                            url='hmfv',
                            controller='hmfv.controllers.home'),
+                    UrlMap(name='map',
+                           url='hmfv/map',
+                           controller='hmfv.controllers.map'),
                     UrlMap(name='add-watershed',
                            url='hmfv/add-watershed',
                            controller='hmfv.controllers.add_watershed'),
                     UrlMap(name='add-watershed-ajax',
                            url='hmfv/add-watershed/submit',
                            controller='hmfv.ajax_controllers.watershed_add'),
+                    UrlMap(name='manage-watersheds',
+                           url='hmfv/manage-watersheds',
+                           controller='hmfv.controllers.manage_watersheds'),
+                    UrlMap(name='manage-watersheds-table',
+                           url='hmfv/manage-watersheds/table',
+                           controller='hmfv.controllers.manage_watersheds_table'),
+                    UrlMap(name='manage-watersheds-edit',
+                           url='hmfv/manage-watersheds/edit',
+                           controller='hmfv.controllers.edit_watershed'),
+                    UrlMap(name='delete-watershed',
+                           url='hmfv/manage-watersheds/delete',
+                           controller='hmfv.ajax_controllers.watershed_delete'),
+                    UrlMap(name='update-watershed',
+                           url='hmfv/manage-watersheds/submit',
+                           controller='hmfv.ajax_controllers.watershed_update'),
+
         )
 
         return url_maps
+
+    def persistent_stores(self):
+        """
+        Add one or more persistent stores
+        """
+        stores = (PersistentStore(name='main_db',
+                                  initializer='hmfv.init_stores.init_main_db',
+                                  spatial=False
+                                  ),
+                  )
+
+        return stores
