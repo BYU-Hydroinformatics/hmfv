@@ -6,7 +6,7 @@ import numpy as np
 import os
 import datetime
 import  csv
-import json
+import json, ast
 from utilities import *
 import StringIO
 from model import Base,engine,SessionMaker,Watershed
@@ -148,6 +148,50 @@ def watershed_update(request):
             response = {'success': 'success'}
 
     return JsonResponse(response)
+
+
+def forecast(request):
+    response = {}
+    if request.is_ajax() and request.method == 'POST':
+        info = request.POST
+        watershed_id = info.get('watershed_id')
+        forecast_date = info.get('forecast_date')
+        forecast_stat = info.get('forecast_stat')
+
+        session = SessionMaker()
+        watershed = session.query(Watershed).get(watershed_id)
+
+        spt_watershed = watershed.spt_watershed
+        spt_basin = watershed.spt_basin
+        spt_reach = watershed.spt_reach
+        rating_curve = ast.literal_eval(watershed.rc_json)
+
+
+
+        forecast_url = 'https://tethys.byu.edu/apps/streamflow-prediction-tool/api/GetWaterML/?watershed_name={0}&subbasin_name={1}&reach_id={2}&start_folder={3}&stat_type={4}'.format(
+                     spt_watershed, spt_basin, spt_reach,forecast_date,forecast_stat)
+
+        ts_list = get_wml_values(forecast_url)
+
+        ranges = []
+        for flow in rating_curve:
+            if rating_curve.index(flow) != len(rating_curve) -1:
+                next_flow = rating_curve[rating_curve.index(flow)+1]
+                ranges.append((flow['f'],next_flow['f'],flow['d']))
+            else:
+                ranges.append((flow['f'],float(flow['f'])+1000000000, flow['d']))
+
+
+        map_forecast = []
+        for date,flow in ts_list:
+            for f in ranges:
+                if f[0] <= flow < f[1]:
+                    flow = f[2]
+                    map_forecast.append([date,flow])
+
+        response = {'success': 'success',"data":ts_list,"title":spt_watershed,"unit":"cms","map_forecast":map_forecast}
+        return JsonResponse(response)
+
 
 
 

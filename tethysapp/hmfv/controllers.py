@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required,user_passes_test
-from tethys_sdk.gizmos import (Button, MessageBox, SelectInput, TextInput, ToggleSwitch)
+from tethys_sdk.gizmos import (Button, MessageBox, SelectInput, TextInput, ToggleSwitch,TimeSeries)
 from model import  Base, SessionMaker,engine,Watershed
-from utilities import user_permission_test
+from utilities import *
+import requests, ast, json
+from django.http import HttpResponse, JsonResponse, Http404
 
 @login_required()
 def home(request):
@@ -29,17 +31,55 @@ def home(request):
     return render(request, 'hmfv/home.html', context)
 
 def map(request):
-    if request.method == 'GET':
-        info = request.GET
-        watershed_id = info.get('watershed_select')
-        session = SessionMaker()
+    context = {}
 
-        watershed = session.query(Watershed).get(watershed_id)
-        watershed_name =  watershed.display_name
+    info = request.GET
+    watershed_id = info.get('watershed_select')
+    session = SessionMaker()
+
+    watershed = session.query(Watershed).get(watershed_id)
+    watershed_name =  watershed.display_name
+    spt_watershed = watershed.spt_watershed
+    spt_basin = watershed.spt_basin
+    spt_reach = watershed.spt_reach
+    service_folder = watershed.service_folder
+    layers_json = get_layers(service_folder)
+
+    ts_info = get_time_step(layers_json)
+    timestep = ts_info["step"]
+    max_depth = ts_info["max_depth"]
+    layers_json = json.dumps(layers_json)
+    available_dates_url = 'https://tethys.byu.edu/apps/streamflow-prediction-tool/api/GetAvailableDates/?watershed_name={0}&subbasin_name={1}&reach_id={2}'.format(spt_watershed,spt_basin,spt_reach)
+    forecast_dates = get_forecast_dates(available_dates_url)
+    forecast_date_picker = SelectInput(display_text='Forecast Date Start',
+                                             name='forecast_date_start',
+                                             multiple=False,
+                                             options=forecast_dates,
+                                             initial=forecast_dates[0])
+
+    stat_options = [('Mean','mean'),('High Resolution','high_res'),('Standard Deviation Range Upper','std_dev_range_upper'),('Standard Deviation Range Lower','std_dev_range_lower'),('Outer Range Upper','outer_range_upper'),('Outer Range Lower','outer_range_lower')]
+    forecast_stat_type = SelectInput(display_text='Forecast Stat Type',
+                                             name='forecast_stat_type',
+                                             multiple=False,
+                                             options=stat_options,
+                                             initial=stat_options[0])
+
+    get_forecast = Button(display_text='View Flood Forecast',
+                          name='submit-get-forecast',
+                          attributes={'id':'submit-get-forecast'},
+                          )
+
+    context = {"watershed_name": watershed_name,
+               "watershed_id":watershed_id,
+               "service_folder":service_folder,
+               "timestep":timestep,
+               "max_depth":max_depth,
+               "layers_json":layers_json,
+               "forecast_date_picker": forecast_date_picker,
+               "forecast_stat_type": forecast_stat_type,
+               "get_forecast": get_forecast}
 
 
-
-    context = {"watershed_name":watershed_name}
     return render(request, 'hmfv/map.html', context)
 
 @user_passes_test(user_permission_test)

@@ -2,14 +2,84 @@
 {% load staticfiles %}
 {% load tethys_gizmos %}
 
-{% block app_navigation_items %}
-<h4>{{watershed_name}}</h4>
-{% endblock%}
-
-{% block app_content %}
-<h3>Watershed Name: {{watershed_name}}</h3>
+{% block styles %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'tethys_gizmos/vendor/openlayers/ol.css' %}" type="text/css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+{% endblock %}
+{% block global_scripts %}
+{{block.super}}
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.3/proj4.js" type="text/javascript"></script>
+<script src="{% static 'tethys_gizmos/vendor/openlayers/ol.js' %}" type="text/javascript"></script>
 {% endblock %}
 
-{% block app_actions %}
+{% block app_navigation_items %}
+<style>
+    ul.layerstack {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    ul.layerstack li {
+        padding: 3px;
+    }
+</style>
+<h5>Map Layers</h5>
+<div id="legend" class="legend" align="left">
+    <ul class="layerstack controls"></ul>
+</div>
+<br>
+<br>
+<form action="forecast/" method="post" id="forecast_form">
+    {% csrf_token%}
+    <input type="text" id="watershed_info" name="watershed_info" value="{{watershed_id}}" hidden>
+    {% gizmo select_input forecast_date_picker %}
+    {% gizmo select_input forecast_stat_type %}
+    {% gizmo button get_forecast %}
+</form>
+<br>
+<button class="btn btn-default reload hidden" >View Orignal Flood Map</button>
+{% endblock%}
+{% block exit_button_override %}
+<div class="exit-button">
+    <a href="{% url 'hmfv:home' %}">Back</a>
+</div>
+{% endblock %}
+{% block app_content %}
+<div id="watershed" name="watershed" data-service-url="{{service_folder}}" data-layers="{{layers_json}}" data-timestep="{{timestep}}" data-max-depth="{{max_depth}}" style="display:none;"></div>
+<h3>{{watershed_name}}</h3>
 
+
+
+<div id="slider"></div>
+<label id="label" for="amount">Flood Depth (meter):</label>
+<input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:normal;" value="0">
+
+<div class="animation" align="center">
+    <div class="btn-toolbar" role="toolbar" align="center"></div>
+    <div class="btn btn-success btn-group btn-xs btn-run" role="group"><span class="glyphicon glyphicon-play"></span></div>
+    <div class="btn btn-danger btn-group btn-xs btn-stop" role="group"><span class="glyphicon glyphicon-pause"></span></div>
+    <div class="btn btn-success btn-group btn-xs btn-increase" role="group"><span class="glyphicon glyphicon-plus"></span></div>
+    <div class="btn btn-danger btn-group btn-xs btn-decrease" role="group"><span class="glyphicon glyphicon-minus"></span></div>
+    <label id="speed_label" for="speed">Speed(s):</label>
+    <input type="text" id="speed" readonly style="border:0; color:red; font-weight:normal;">
+</div>
+<br>
+<div id="map" class="map"></div>
+<div>
+    <div class="chart-wrapper">
+        <div class="chart-inner">
+            <div id="container" style="height:275px;width:90%"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'hmfv/js/map.js' %}" type="text/javascript"></script>
 {% endblock %}

@@ -50,6 +50,7 @@ function addWarningMessage(error, div_id) {
 
 }
 
+
 //send data to database with error messages
 function ajax_update_database(ajax_url, ajax_data, div_id) {
     //backslash at end of url is requred

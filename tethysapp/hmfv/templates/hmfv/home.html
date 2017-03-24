@@ -7,6 +7,7 @@
 
 {% if watersheds_length > 0 %}
     <form action="{% url 'hmfv:map' %}" method="get">
+
         {% gizmo select_input watershed_select %}
         <div class="btn-group ">
             <a name="submit-go-to-map" class="btn btn-success" role="button" onclick="document.forms[0].submit();" id="submit-go-to-map">

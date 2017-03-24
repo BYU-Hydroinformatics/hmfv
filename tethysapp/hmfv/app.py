@@ -8,7 +8,7 @@ class HimalayaFloodMapVisualizer(TethysAppBase):
 
     name = 'Himalaya Flood Map Visualizer'
     index = 'hmfv:home'
-    icon = 'hmfv/images/icon.gif'
+    icon = 'hmfv/images/flood.png'
     package = 'hmfv'
     root_url = 'hmfv'
     color = '#27afc4'
@@ -30,6 +30,9 @@ class HimalayaFloodMapVisualizer(TethysAppBase):
                     UrlMap(name='map',
                            url='hmfv/map',
                            controller='hmfv.controllers.map'),
+                    UrlMap(name='forecast',
+                           url='hmfv/map/forecast',
+                           controller='hmfv.ajax_controllers.forecast'),
                     UrlMap(name='add-watershed',
                            url='hmfv/add-watershed',
                            controller='hmfv.controllers.add_watershed'),
