@@ -32,6 +32,7 @@ var HMFV_MANAGE_WATERSHEDS = (function() {
     /************************************************************************
      *                    PRIVATE FUNCTION IMPLEMENTATIONS
      *************************************************************************/
+    //Show a modal when the user clicks Edit.
     getModalHTML = function(watershed_id, reload) {
         reload = typeof reload !== 'undefined' ? reload : false;
         $.ajax({
@@ -42,7 +43,7 @@ var HMFV_MANAGE_WATERSHEDS = (function() {
             },
             success: function(data) {
                 $("#edit_watershed_modal").find('.modal-body').html(data);
-                initializeModal();
+                initializeModal(); //Get the relevant metadata for the selected watershed.
                 if (reload) {
                     addSuccessMessage("Watershed Update Complete!");
                 }
@@ -54,7 +55,7 @@ var HMFV_MANAGE_WATERSHEDS = (function() {
 
         $('.bootstrap-switch').each(function () {
             $(this).bootstrapSwitch();
-        });
+        }); //Enable bootstrap switch
 
         $('.rc_upload').addClass('hidden');
 
@@ -68,7 +69,7 @@ var HMFV_MANAGE_WATERSHEDS = (function() {
             } else {
                 $('.rc_upload').addClass('hidden');
             }
-        });
+        }); //Show the option to upload rating curve based on the switch
 
         $('#edit_modal_submit').off().click(function () {
             window.scrollTo(0,0);
@@ -83,6 +84,7 @@ var HMFV_MANAGE_WATERSHEDS = (function() {
 
             var submit_button = $(this);
 
+            //Getting the values of the newly edited watershed form
             var watershed_id = $("#watershed_id").val();
             var watershed_name = $("#watershed-name-input").val();
             var service_folder = $("#service-folder-input").val();
@@ -94,9 +96,11 @@ var HMFV_MANAGE_WATERSHEDS = (function() {
             var spt_reach = $("#spt-reach-id-input").val();
             submit_button.text('Submitting ...');
 
+            //If the user wants to re-upload the shapefile follow the following workflow
             if ($('#shp-upload-toggle').bootstrapSwitch('state')) {
+                //Following the same workflow as adding a watershed
                 var rating_curve_files = $("#rc-upload-input")[0].files;
-                var data = new FormData();
+                var data = new FormData(); //Preparing the data to be uploaded by the edit watershed modal
                 data.append("watershed_id",watershed_id);
                 data.append("display_name",watershed_name);
                 data.append("service_folder",service_folder);
@@ -115,7 +119,7 @@ var HMFV_MANAGE_WATERSHEDS = (function() {
                 });
 
             }else{
-                var data = new FormData();
+                var data = new FormData(); //If there is no new rating curve, simply update the database without the file
                 data.append("watershed_id",watershed_id);
                 data.append("display_name",watershed_name);
                 data.append("service_folder",service_folder);
@@ -135,11 +139,12 @@ var HMFV_MANAGE_WATERSHEDS = (function() {
 
     };
 
-
+    //Initialize the table showing each watershed from the local database
     initializeTableFunctions = function() {
         m_results_per_page = 5;
         //handle the submit edit event
         $('.submit-edit-watershed').off().click(function () {
+            //Get the form to edit the watershed
             getModalHTML($(this).parent().parent().parent().find('.watershed-name').data('watershed_id'));
         });
 
@@ -215,6 +220,7 @@ var HMFV_MANAGE_WATERSHEDS = (function() {
         }
     };
 
+    //Get the page number
     getTablePage = function() {
         $.ajax({
             url: 'table',

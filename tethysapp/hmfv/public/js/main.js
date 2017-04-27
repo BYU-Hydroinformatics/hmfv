@@ -1,3 +1,6 @@
+//This file serves as a helper function repository for functions that are used more than once in the other javascript files
+
+//Get a CSRF cookie for request
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
@@ -81,6 +84,7 @@ function ajax_update_database(ajax_url, ajax_data, div_id) {
     return xhr;
 }
 
+//send data to database but follow this if you have files assosciated with it.
 function ajax_update_database_with_file(ajax_url, ajax_data,div_id) {
     //backslash at end of url is required
     if (ajax_url.substr(-1) !== "/") {
@@ -110,6 +114,7 @@ function ajax_update_database_with_file(ajax_url, ajax_data,div_id) {
     return xhr;
 }
 
+//Add success message when stuff gets done successfully
 function addSuccessMessage(message, div_id) {
     var div_id_string = '#message';
     if (typeof div_id != 'undefined') {
@@ -126,6 +131,7 @@ function addSuccessMessage(message, div_id) {
     .addClass('alert-success');
 }
 
+//Show the error message if they messed up
 function appendErrorMessage(message, div_id, message_div_id) {
     var div_id_string = '';
     if (typeof div_id != 'undefined') {
@@ -146,7 +152,7 @@ function appendErrorMessage(message, div_id, message_div_id) {
     .removeClass('hidden');
 }
 
-
+//Add Success Message
 function appendSuccessMessage(message, div_id) {
     var div_id_string = '';
     if (typeof div_id != 'undefined') {
@@ -179,7 +185,7 @@ function addErrorMessage(error, div_id) {
 
 }
 
-//delete row data
+//delete row data from the manage watershed table
 function deleteRowData(submit_button, data, div_id) {
     if (window.confirm("Are you sure?")) {
         var parent_row = submit_button.parent().parent().parent();

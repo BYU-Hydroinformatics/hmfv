@@ -73,7 +73,9 @@ var HMFV_MAP = (function() {
         sources = [];
         layers = [base_layer];
 
-        first_layer = layer_obj['list'][0];
+        first_layer = layer_obj['list'][0]; //First layer out of the layers object
+
+        //Adding the first layer and source so that the source and layer can be updated dynamically
         jQuery.each(first_layer.metadata,function(key,data){
 
             wms_source = new ol.source.ImageWMS({
@@ -92,8 +94,8 @@ var HMFV_MAP = (function() {
 
         });
 
-        sub_folder_str = first_layer.layer.substring(0,first_layer.layer.indexOf('_')+'_'.length);
-        slider_url = service_url.replace("rest/","")+sub_folder_str;
+        sub_folder_str = first_layer.layer.substring(0,first_layer.layer.indexOf('_')+'_'.length); //Modifying the layername
+        slider_url = service_url.replace("rest/","")+sub_folder_str; //Generating a generic layer url for the slider, so that the layers are updated as the slider moves.
 
         view = new ol.View({
             center: [9111517, 3258918],
@@ -107,11 +109,12 @@ var HMFV_MAP = (function() {
             view: view,
         });
 
-        map.getView().fit(first_layer.extent,map.getSize());
+        map.getView().fit(first_layer.extent,map.getSize()); //Zooming to the extent of the first layer
         map.updateSize();
     };
 
     init_legend = function(){
+        //Generate a legend based on all the elements in a layer
         var layr_list;
 
         layr_list = map.getLayers();
@@ -120,7 +123,7 @@ var HMFV_MAP = (function() {
         for(var i= layr_list.getLength();i--;){
             for(var j=legend_obj.layers.length;j--;){
                 if(layr_list.item(i).get('name') == legend_obj.layers[j].layerName){
-                    new_legend_item(layr_list.item(i),legend_obj.layers[j].legend[0].imageData);
+                    new_legend_item(layr_list.item(i),legend_obj.layers[j].legend[0].imageData); //Creating a legend item based on each item in the first layer
                 }
             }
         }
@@ -129,7 +132,7 @@ var HMFV_MAP = (function() {
 
 
 
-
+    //Creating a dynamic legend item based on the layer
     new_legend_item = function(layer,img){
         var name = layer.get('name');
         var div = "<li data-layerid='" + name + "'>" +
@@ -137,12 +140,10 @@ var HMFV_MAP = (function() {
             "<span> " + name + "</span>" +
             "<i class='glyphicon glyphicon-check lyr'></i> ";
         $('ul.layerstack').prepend(div);
-        // $('ul.layerstack li').on('click', function() {
-        //            $('ul.layerstack li').removeClass('selected');
-        //            $(this).addClass('selected');
-        //        });
+
     };
 
+    //Get the legend json based on the service folder
     get_legend_json = function(){
         $.ajax({
             url: service_url+first_layer.layer+'/MapServer/legend?f=json&callback=',
@@ -202,8 +203,8 @@ var HMFV_MAP = (function() {
 
     init_vars = function(){
         var $watershed_element = $('#watershed');
-        service_url = $watershed_element.attr('data-service-url');
-        m_layer_options = $watershed_element.attr('data-layers');
+        service_url = $watershed_element.attr('data-service-url'); //Attribute with the data service url
+        m_layer_options = $watershed_element.attr('data-layers'); //Attribute with the layer info
         layer_obj = JSON.parse(m_layer_options);
         timestep = parseFloat($watershed_element.attr('data-timestep'));
         max_depth = parseFloat($watershed_element.attr('data-max-depth'));
@@ -211,24 +212,25 @@ var HMFV_MAP = (function() {
 
     };
 
+    //Initializing a generic slider based on the layers in the service folder
     init_slider = function(){
 
         $( "#slider" ).slider({
             value:0,
             min: 0,
             max: max_depth,
-            step: timestep,
+            step: timestep, //Assigning the slider step based on the depths that were retrieved in the controller
             animate:"fast",
             slide: function( event, ui ) {
 
-                $( "#amount" ).val( ui.value );
+                $( "#amount" ).val( ui.value ); //Get the value from the slider
                 var decimal_value = ui.value.toString().split(".").join("");
 
-                var url = slider_url+decimal_value+'/MapServer/WmsServer?';
+                var url = slider_url+decimal_value+'/MapServer/WmsServer?'; //Set the url based on the slider value
 
                 sources.forEach(function(source){
                     source.setUrl(url);
-                });
+                }); //This updates the map layer based on the slider value
 
             }
         });
@@ -246,13 +248,14 @@ var HMFV_MAP = (function() {
         return null;
     };
 
+    //Find the layer check if its in a group
     find_by = function(layer, key, value) {
 
         if (layer.get(key) === value) {
             return layer;
         }
 
-        // Find recursively if it is a group
+        // Find recursively if the layer is in a group
         if (layer.getLayers) {
             var layers = layer.getLayers().getArray(),
                 len = layers.length, result;
@@ -294,13 +297,15 @@ var HMFV_MAP = (function() {
             } else {
                 $(this).removeClass('glyphicon-check').addClass('glyphicon-unchecked');
             }
-        });
+        }); //Turn the layer on and off based on clicking checkbox
 
         //Global values.
+        //Setting the controls for controlling the slider using the control panel
         var animationDelay = 2000;
         $("#speed").val(animationDelay/1000);
         var sliderInterval = {};
 
+        //Reconfigure the slider text based on the forecast
         if($("label[for='amount']").text() == "Flood Depth (meter):"){
             $("#slider").on("slidechange", function(event, ui) {
 
@@ -313,14 +318,20 @@ var HMFV_MAP = (function() {
                 });
                 $("#amount").val( ui.value );
             });
+
+            //Increase the slider timer when you click the increase the speed
             $(".btn-increase").on("click", function() {
                 animationDelay = animationDelay + 1000;
                 $("#speed").val(animationDelay/1000);
             });
+
+            //Decrease the slider timer when you click decrease the speed
             $(".btn-decrease").on("click", function() {
                 animationDelay = animationDelay - 1000;
                 $("#speed").val(animationDelay/1000);
             });
+
+            //Animate the slider
             $(".btn-run").on("click", function() {
                 //Set the slider value to the current value to start the animation at the correct point.
 
@@ -340,16 +351,12 @@ var HMFV_MAP = (function() {
                 }, animationDelay);
             });
 
+            //Pause the slider
             $(".btn-stop").on("click", function() {
                 //Call clearInterval to stop the animation.
                 clearInterval(sliderInterval);
             });
         }
-
-
-
-
-
 
         $(function () {
             var target, observer, config;
@@ -365,7 +372,7 @@ var HMFV_MAP = (function() {
             config = {attributes: true};
 
             observer.observe(target, config);
-        }());
+        }()); //Update the mapsize when you change the window size
 
         $('#submit-get-forecast').click(function () {
 
@@ -377,10 +384,11 @@ var HMFV_MAP = (function() {
             data.append("forecast_stat",forecast_stat);
             data.append("watershed_id",watershed_id);
 
-
+            //Making the ajax reuqest with the forecast information
             var xhr = ajax_update_database_with_file("forecast",data);
             xhr.done(function (result) {
                 if('success' in result){
+                    //Generating a time series of the forecast
                     $('#container').highcharts({
                         chart: {
                             type:'area',
@@ -420,7 +428,9 @@ var HMFV_MAP = (function() {
 
                     });
                     range_length = result['map_forecast'].length;
-                    $("label[for='amount']").text("Flood Date");
+                    $("label[for='amount']").text("Flood Date"); //Change the label to reflect the forecast
+
+                    //Reconfigure the slider to handle the forecast
                     $( "#slider" ).slider({
                         value:1,
                         min: 0,
@@ -444,21 +454,22 @@ var HMFV_MAP = (function() {
 
                     $("#slider").on("slidechange", function(event, ui) {
 
-                        var range_value = result['map_forecast'][ui.value - 1][1];
-                        $( "#amount" ).val(result['map_forecast'][ui.value - 1][0]);
+                        var range_value = result['map_forecast'][ui.value - 1][1]; //Slider value based on the forecast date
+                        $( "#amount" ).val(result['map_forecast'][ui.value - 1][0]); //The text below the slider
                         var decimal_value = range_value.toString().split(".").join("");
 
-                        var url = slider_url+decimal_value+'/MapServer/WmsServer?';
+                        var url = slider_url+decimal_value+'/MapServer/WmsServer?'; //Updating the url based on the slider value
 
                         sources.forEach(function(source){
                             source.setUrl(url);
                         });
                     });
 
+
                     $(".reload").removeClass("hidden");
                     $(".reload").click(function(){
                         location.reload();
-                    });
+                    }); //Reload the web browser if the user clicks return to the original depth
 
 
 

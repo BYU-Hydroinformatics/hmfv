@@ -18,12 +18,12 @@ def home(request):
     watershed_list = []
 
     for watershed in watersheds:
-        watershed_list.append(("%s (Streamflow Prediction Reach %s)" % (watershed.display_name,watershed.spt_reach),watershed.id))
+        watershed_list.append(("%s (Streamflow Prediction Reach %s)" % (watershed.display_name,watershed.spt_reach),watershed.id)) #Generating the options for the dropdown
 
     watershed_select = SelectInput(display_text='Select Watershed',
                                    name='watershed_select',
                                    options=watershed_list,
-                                   multiple=False, )
+                                   multiple=False, ) #Generating the dropdown with the available watersheds
 
     context = {'watershed_select' : watershed_select,
                'watersheds_length': len(watersheds)}
@@ -31,43 +31,51 @@ def home(request):
     return render(request, 'hmfv/home.html', context)
 
 def map(request):
+    """
+    Controller for the map page
+    """
     context = {}
 
     info = request.GET
-    watershed_id = info.get('watershed_select')
-    session = SessionMaker()
+    watershed_id = info.get('watershed_select') #Get the watershed id
+    session = SessionMaker() #Connect to the Database
 
+    #Retrieve all the metadata for that watershed
     watershed = session.query(Watershed).get(watershed_id)
     watershed_name =  watershed.display_name
     spt_watershed = watershed.spt_watershed
     spt_basin = watershed.spt_basin
     spt_reach = watershed.spt_reach
     service_folder = watershed.service_folder
-    layers_json = get_layers(service_folder)
+    layers_json = get_layers(service_folder) #Get all the available layers in the ArcGIS server along with their relevant metadata. See utilities.py.
 
-    ts_info = get_time_step(layers_json)
+    ts_info = get_time_step(layers_json) #Get the timestep aka the depth difference for each layer. See utilities.py.
     timestep = ts_info["step"]
     max_depth = ts_info["max_depth"]
     layers_json = json.dumps(layers_json)
+    #Get the available dates for the watershed using Streamflow Prediction tool api
     available_dates_url = 'https://tethys.byu.edu/apps/streamflow-prediction-tool/api/GetAvailableDates/?watershed_name={0}&subbasin_name={1}&reach_id={2}'.format(spt_watershed,spt_basin,spt_reach)
-    forecast_dates = get_forecast_dates(available_dates_url)
+    forecast_dates = get_forecast_dates(available_dates_url) #Processing the url to generate dates dynamically. See utilities.py
     forecast_date_picker = SelectInput(display_text='Forecast Date Start',
                                              name='forecast_date_start',
                                              multiple=False,
                                              options=forecast_dates,
-                                             initial=forecast_dates[0])
+                                             initial=forecast_dates[0]) #Dropdown with the options to select a date
 
+    #Options for the Statistic type
     stat_options = [('Mean','mean'),('High Resolution','high_res'),('Standard Deviation Range Upper','std_dev_range_upper'),('Standard Deviation Range Lower','std_dev_range_lower'),('Outer Range Upper','outer_range_upper'),('Outer Range Lower','outer_range_lower')]
     forecast_stat_type = SelectInput(display_text='Forecast Stat Type',
                                              name='forecast_stat_type',
                                              multiple=False,
                                              options=stat_options,
-                                             initial=stat_options[0])
+                                             initial=stat_options[0]) #Dropdown for selecting the statistic type
 
     get_forecast = Button(display_text='View Flood Forecast',
                           name='submit-get-forecast',
                           attributes={'id':'submit-get-forecast'},
-                          )
+                          ) #Get Forecast Button
+
+    #Layers json stores the json information about each layer
 
     context = {"watershed_name": watershed_name,
                "watershed_id":watershed_id,
@@ -92,31 +100,36 @@ def add_watershed(request):
                                      name='watershed-name-input',
                                      placeholder='e.g.: Kathmandu Flood Map',
                                      icon_append='glyphicon glyphicon-home',
-                                     )
+                                     ) #Input for the Watershed Display Name
+
     service_folder_input = TextInput(display_text='ArcGIS Server REST Service Directory',
                                      name='service-folder-input',
                                      placeholder='http://geoserver.byu.edu/arcgis/rest/services/Nepal_Western/',
-                                     icon_append='glyphicon glyphicon-link',)
+                                     icon_append='glyphicon glyphicon-link',) #input for the ArcGIS rest service folder
+
     spt_watershed_input = TextInput(display_text='Streamflow Prediction Tool Watershed',
                                      name='spt-watershed-name-input',
                                      placeholder='e.g.: Nepal West',
-                                     icon_append='glyphicon glyphicon-tag',)
+                                     icon_append='glyphicon glyphicon-tag',) #Input for the streamflow prediction tool watershed name
+
     spt_basin_input = TextInput(display_text='Streamflow Prediction Tool Subbasin',
                                     name='spt-basin-name-input',
                                     placeholder='e.g.: Kandra',
-                                    icon_append='glyphicon glyphicon-tag', )
+                                    icon_append='glyphicon glyphicon-tag', ) #Input for the streamflow prediction tool basin input
 
     spt_reach_id_input = TextInput(display_text='Streamflow Prediction Tool Reachid',
                                      name='spt-reach-id-input',
                                      placeholder='e.g.: 45',
                                      icon_append='glyphicon glyphicon-tag',
-                                     append='For retrieving forecasts')
+                                     append='For retrieving forecasts') #Input for the streamflow prediction tool reach id
+
+    #Note: Currently there are no validations to check if the Streamflow Prediction tool watershed,basin, and the reach id exist or not. Any validations will need to be done on the front end.
 
     add_button = Button(display_text='Add Watershed',
                         icon='glyphicon glyphicon-plus',
                         style='success',
                         name='submit-add-watershed',
-                        attributes={'id': 'submit-add-watershed'}, )
+                        attributes={'id': 'submit-add-watershed'}, ) #Add watershed button
 
     context = {"watershed_name_input":watershed_name_input,
                "service_folder_input":service_folder_input,
@@ -132,16 +145,17 @@ def manage_watersheds(request):
     """
     Controller for the app manage watershed page
     """
-    session = SessionMaker()
-    num_watersheds = session.query(Watershed).count()
-    session.close()
+
+    session = SessionMaker() #Connecting to the database
+    num_watersheds = session.query(Watershed).count() #Get the number of records in the database
+    session.close() #Close the database
     edit_modal = MessageBox(name='edit_watershed_modal',
                             title='Edit Watershed',
                             message='Loading ...',
                             dismiss_button='Nevermind',
                             affirmative_button='Save Changes',
                             affirmative_attributes='id=edit_modal_submit',
-                            width=500)
+                            width=500) #Modal that shows up when you are editing the watershed
     context = {
         'initial_page': 0,
         'num_watersheds': num_watersheds,
@@ -155,16 +169,18 @@ def manage_watersheds_table(request):
     """
        Controller for the app manage watershed page
        """
-    #initialize session
+    #Initialize session
     session = SessionMaker()
 
     RESULTS_PER_PAGE = 5
 
-    page = int(request.GET.get('page'))
+    page = int(request.GET.get('page')) #Get pages there are
 
-    watersheds = session.query(Watershed).all()[(page * RESULTS_PER_PAGE):((page + 1) * RESULTS_PER_PAGE)]
+    watersheds = session.query(Watershed).all()[(page * RESULTS_PER_PAGE):((page + 1) * RESULTS_PER_PAGE)] #Get all the watersheds for that particular page
 
     session.close()
+
+    #Buttons to navigate the pages
 
     prev_button = Button(display_text='Previous',
                          name='prev_button',
@@ -187,13 +203,15 @@ def edit_watershed(request):
     """
     if request.method == 'GET':
         info = request.GET
-        # get/check information from AJAX request
+        # Get/Check information from AJAX request
         watershed_id = info.get('watershed_id')
 
         # initialize session
         session = SessionMaker()
 
-        watershed = session.query(Watershed).get(watershed_id)
+        watershed = session.query(Watershed).get(watershed_id) #Get the selected watershed
+
+        #Same as rendering the add watershed page. Now assigning values from the database.
 
         watershed_name_input = TextInput(display_text='Watershed Display Name',
                                          name='watershed-name-input',
@@ -201,6 +219,7 @@ def edit_watershed(request):
                                          icon_append='glyphicon glyphicon-home',
                                          initial=watershed.display_name,
                                          )
+
         service_folder_input = TextInput(display_text='ArcGIS Server REST Service Directory',
                                          name='service-folder-input',
                                          placeholder='http://geoserver.byu.edu/arcgis/rest/services/Nepal_Western/',
@@ -212,6 +231,7 @@ def edit_watershed(request):
                                         placeholder='e.g.: Nepal West',
                                         icon_append='glyphicon glyphicon-tag',
                                         initial=watershed.spt_watershed)
+
         spt_basin_input = TextInput(display_text='Streamflow Prediction Tool Subbasin',
                                     name='spt-basin-name-input',
                                     placeholder='e.g.: Kandra',
@@ -224,13 +244,14 @@ def edit_watershed(request):
                                        icon_append='glyphicon glyphicon-tag',
                                        append='For retrieving forecasts',
                                        initial=watershed.spt_reach)
+
         rc_upload_toggle_switch = ToggleSwitch(display_text='Re-Upload Rating Curve?',
                                                 name='rc-upload-toggle',
                                                 on_label='Yes',
                                                 off_label='No',
                                                 on_style='success',
                                                 off_style='danger',
-                                                initial=False, )
+                                                initial=False, ) #Toggle switch in case you want to re-upload the rating curve file
 
         add_button = Button(display_text='Add Watershed',
                             icon='glyphicon glyphicon-plus',

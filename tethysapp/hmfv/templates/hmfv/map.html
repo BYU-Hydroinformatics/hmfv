@@ -48,6 +48,7 @@
 </div>
 {% endblock %}
 {% block app_content %}
+<!--The div that stores important information about the layers,service folder, timestep and max depth. This will be retrieved in the JavaScript for further processing.-->
 <div id="watershed" name="watershed" data-service-url="{{service_folder}}" data-layers="{{layers_json}}" data-timestep="{{timestep}}" data-max-depth="{{max_depth}}" style="display:none;"></div>
 <h3>{{watershed_name}}</h3>
 
