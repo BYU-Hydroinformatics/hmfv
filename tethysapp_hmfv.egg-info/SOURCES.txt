@@ -1,11 +1,15 @@
 setup.py
 tethysapp/__init__.py
 tethysapp/hmfv/__init__.py
+tethysapp/hmfv/ajax_controllers.py
 tethysapp/hmfv/app.py
 tethysapp/hmfv/controllers.py
 tethysapp/hmfv/handoff.py
 tethysapp/hmfv/init_stores.py
 tethysapp/hmfv/model.py
+tethysapp/hmfv/utilities.py
+tethysapp/hmfv/templates/__init__.py
+tethysapp/hmfv/templates/hmfv/__init__.py
 tethysapp/hmfv/tests/__init__.py
 tethysapp/hmfv/tests/tests.py
 tethysapp_hmfv.egg-info/PKG-INFO

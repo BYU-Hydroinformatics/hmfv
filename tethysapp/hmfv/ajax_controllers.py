@@ -9,7 +9,9 @@ import  csv
 import json, ast
 from utilities import *
 import StringIO
-from model import Base,engine,SessionMaker,Watershed
+
+from .app import HimalayaFloodMapVisualizer as app
+from model import Watershed
 from sqlalchemy.orm.exc import ObjectDeletedError
 from sqlalchemy import update
 
@@ -56,8 +58,13 @@ def watershed_add(request):
                 rc_list.append(rc_json)
                 response = {"data":rc_list,"success":"Success"}
 
+        # session = SessionMaker()
+
+        session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+        session = session_maker()
+
         Base.metadata.create_all(engine) #Connect to the database
-        session = SessionMaker()
+
         #Adding the parameters to the database
         watershed = Watershed(display_name=display_name,service_folder=service_folder,spt_watershed=spt_watershed,spt_basin=spt_basin,spt_reach=spt_reach,rc_json=str(rc_list))
 
@@ -80,7 +87,10 @@ def watershed_delete(request):
 
         if watershed_id:
             # initialize session
-            session = SessionMaker()
+            # session = SessionMaker()
+
+            session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+            session = session_maker()
 
             session.query(Watershed).filter(Watershed.id == watershed_id).delete(synchronize_session='evaluate') #Delete the record from the database and refresh it
             session.commit()
@@ -112,7 +122,10 @@ def watershed_update(request):
         rc_files = request.FILES.getlist('rating_curve')
 
         # initialize session
-        session = SessionMaker()
+        # session = SessionMaker()
+
+        session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+        session = session_maker()
 
         watershed = session.query(Watershed).get(watershed_id) #Find the relevant watershed based on the watershed id
 
@@ -179,7 +192,10 @@ def forecast(request):
         forecast_stat = info.get('forecast_stat')
 
         #Connect to the database
-        session = SessionMaker()
+        # session = SessionMaker()
+
+        session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+        session = session_maker()
         watershed = session.query(Watershed).get(watershed_id) #Get the relevant watershed based on the watershed id
 
         #Retrieve additional metadata from the database

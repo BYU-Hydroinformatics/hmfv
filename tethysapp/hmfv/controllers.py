@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required,user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 from tethys_sdk.gizmos import (Button, MessageBox, SelectInput, TextInput, ToggleSwitch,TimeSeries)
-from model import  Base, SessionMaker,engine,Watershed
+
+from .app import HimalayaFloodMapVisualizer as app
+from .model import  Base, Watershed
 from utilities import *
 import requests, ast, json
 from django.http import HttpResponse, JsonResponse, Http404
@@ -13,7 +15,11 @@ def home(request):
     """
 
     #Show available watersheds
-    session = SessionMaker()
+    # session = SessionMaker()
+
+    session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+    session = session_maker()
+
     watersheds = session.query(Watershed).all()
     watershed_list = []
 
@@ -38,7 +44,10 @@ def map(request):
 
     info = request.GET
     watershed_id = info.get('watershed_select') #Get the watershed id
-    session = SessionMaker() #Connect to the Database
+    # session = SessionMaker() #Connect to the Database
+
+    session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+    session = session_maker()
 
     #Retrieve all the metadata for that watershed
     watershed = session.query(Watershed).get(watershed_id)
@@ -146,7 +155,10 @@ def manage_watersheds(request):
     Controller for the app manage watershed page
     """
 
-    session = SessionMaker() #Connecting to the database
+    # session = SessionMaker() #Connecting to the database
+
+    session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+    session = session_maker()
     num_watersheds = session.query(Watershed).count() #Get the number of records in the database
     session.close() #Close the database
     edit_modal = MessageBox(name='edit_watershed_modal',
@@ -170,7 +182,10 @@ def manage_watersheds_table(request):
        Controller for the app manage watershed page
        """
     #Initialize session
-    session = SessionMaker()
+    # session = SessionMaker()
+
+    session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+    session = session_maker()
 
     RESULTS_PER_PAGE = 5
 
@@ -207,7 +222,10 @@ def edit_watershed(request):
         watershed_id = info.get('watershed_id')
 
         # initialize session
-        session = SessionMaker()
+        # session = SessionMaker()
+
+        session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+        session = session_maker()
 
         watershed = session.query(Watershed).get(watershed_id) #Get the selected watershed
 

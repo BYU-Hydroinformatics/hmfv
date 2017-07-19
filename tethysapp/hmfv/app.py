@@ -1,5 +1,6 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
-from tethys_sdk.stores import PersistentStore
+from tethys_sdk.app_settings import PersistentStoreDatabaseSetting
+
 
 class HimalayaFloodMapVisualizer(TethysAppBase):
     """
@@ -60,14 +61,15 @@ class HimalayaFloodMapVisualizer(TethysAppBase):
         return url_maps
 
     #Declaring the database class
-    def persistent_stores(self):
+    def persistent_store_settings(self):
         """
         Add one or more persistent stores
         """
-        stores = (PersistentStore(name='main_db', #Name of the database/persistent store
-                                  initializer='hmfv.init_stores.init_main_db', #Location of the persistent store initialization function. See init_stores.py
-                                  spatial=False
-                                  ),
+        ps_settings = (PersistentStoreDatabaseSetting(name='main_db',
+                                                      description='primary database',
+                                                      initializer='hmfv.init_stores.init_main_db',
+                                                      required=True
+                                                      ),
                   )
 
-        return stores
+        return ps_settings

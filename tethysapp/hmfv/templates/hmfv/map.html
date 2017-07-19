@@ -43,8 +43,8 @@
 <button class="btn btn-default reload hidden" >View Orignal Flood Map</button>
 {% endblock%}
 {% block exit_button_override %}
-<div class="exit-button">
-    <a href="{% url 'hmfv:home' %}">Back</a>
+<div class="header-button glyphicon-button" title="Back">
+    <a href="{% url 'hmfv:home' %}"><span class="glyphicon glyphicon-arrow-left"></span></a>
 </div>
 {% endblock %}
 {% block app_content %}
