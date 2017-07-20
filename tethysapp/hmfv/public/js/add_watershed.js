@@ -194,7 +194,7 @@ var HMFV_ADD_WATERSHED = (function() {
                 data.append("rating_curve",rating_curve_files[i]);
             }
 
-            var xhr = ajax_update_database_with_file("submit",data); //Submitting the data through the ajax function, see main.js for the helper function.
+            var xhr = ajax_update_database_with_file("submit", data, "message"); //Submitting the data through the ajax function, see main.js for the helper function.
             xhr.done(function(return_data){ //Reset the form once the data is added successfully
                 if("success" in return_data){
                     reset_form(return_data);

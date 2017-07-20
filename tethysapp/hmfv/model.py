@@ -1,11 +1,11 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Float, String
-# from sqlalchemy.orm import sessionmaker
 
-# from app import HimalayaFloodMapVisualizer
-#
-# engine = HimalayaFloodMapVisualizer.get_persistent_store_engine('main_db')
-# SessionMaker = sessionmaker(bind=engine)
+from .app import HimalayaFloodMapVisualizer as app
+
+session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+session = session_maker()
+
 Base = declarative_base()
 
 class Watershed(Base):

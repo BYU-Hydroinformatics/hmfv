@@ -85,7 +85,7 @@ function ajax_update_database(ajax_url, ajax_data, div_id) {
 }
 
 //send data to database but follow this if you have files assosciated with it.
-function ajax_update_database_with_file(ajax_url, ajax_data,div_id) {
+function ajax_update_database_with_file(ajax_url, ajax_data, div_id) {
     //backslash at end of url is required
     if (ajax_url.substr(-1) !== "/") {
         ajax_url = ajax_url.concat("/");
@@ -101,9 +101,9 @@ function ajax_update_database_with_file(ajax_url, ajax_data,div_id) {
     });
     xhr.done(function(data) {
         if("success" in data){
-            addSuccessMessage(data['success'],div_id);
+            addSuccessMessage(data['success'], div_id);
         }else{
-            appendErrorMessage(data['error'],div_id);
+            appendErrorMessage(data['error'], div_id);
         }
     })
     .fail(function(xhr, status, error) {

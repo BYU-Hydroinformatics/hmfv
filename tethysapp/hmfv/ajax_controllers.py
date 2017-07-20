@@ -56,14 +56,11 @@ def watershed_add(request):
                 rc_json["f"] = flow
                 rc_json["d"] = depth
                 rc_list.append(rc_json)
-                response = {"data":rc_list,"success":"Success"}
 
-        # session = SessionMaker()
+            response = {"data":rc_list,"success":"Success"}
 
         session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
         session = session_maker()
-
-        Base.metadata.create_all(engine) #Connect to the database
 
         #Adding the parameters to the database
         watershed = Watershed(display_name=display_name,service_folder=service_folder,spt_watershed=spt_watershed,spt_basin=spt_basin,spt_reach=spt_reach,rc_json=str(rc_list))
