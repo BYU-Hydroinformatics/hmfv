@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
-from tethys_sdk.gizmos import (Button, MessageBox, SelectInput, TextInput, ToggleSwitch,TimeSeries)
+from tethys_sdk.gizmos import (Button, MessageBox, SelectInput, TextInput, ToggleSwitch, TimeSeries)
 
 from .app import HimalayaFloodMapVisualizer as app
-from .model import  Base, Watershed
+from .model import Watershed
 from utilities import *
 import requests, ast, json
 from django.http import HttpResponse, JsonResponse, Http404
@@ -56,6 +56,7 @@ def map(request):
     spt_basin = watershed.spt_basin
     spt_reach = watershed.spt_reach
     service_folder = watershed.service_folder
+    print(service_folder,'44444444')
     layers_json = get_layers(service_folder) #Get all the available layers in the ArcGIS server along with their relevant metadata. See utilities.py.
 
     ts_info = get_time_step(layers_json) #Get the timestep aka the depth difference for each layer. See utilities.py.
@@ -111,7 +112,16 @@ def add_watershed(request):
                                      icon_append='glyphicon glyphicon-home',
                                      ) #Input for the Watershed Display Name
 
-    service_folder_input = TextInput(display_text='ArcGIS Server REST Service Directory',
+    # server_toggle_switch = ToggleSwitch(display_text='Add Geospatial Server',
+    #                                     name='server-toggle',
+    #                                     on_label='Arcserver',
+    #                                     off_label='Geoserver',
+    #                                     on_style='info',
+    #                                     off_style='info',
+    #                                     initial=True,
+    #                                     size='large')
+
+    service_folder_input = TextInput(display_text='Server REST Service Directory',
                                      name='service-folder-input',
                                      placeholder='http://geoserver.byu.edu/arcgis/rest/services/Nepal_Western/',
                                      icon_append='glyphicon glyphicon-link',) #input for the ArcGIS rest service folder
@@ -141,6 +151,7 @@ def add_watershed(request):
                         attributes={'id': 'submit-add-watershed'}, ) #Add watershed button
 
     context = {"watershed_name_input":watershed_name_input,
+               # 'server_toggle_switch': server_toggle_switch,
                "service_folder_input":service_folder_input,
                "spt_watershed_input":spt_watershed_input,
                "spt_basin_input":spt_basin_input,
@@ -279,11 +290,11 @@ def edit_watershed(request):
 
         context = {
             'watershed_name_input': watershed_name_input,
-            'service_folder_input':service_folder_input,
-            'spt_watershed_input':spt_watershed_input,
+            'service_folder_input': service_folder_input,
+            'spt_watershed_input': spt_watershed_input,
             'spt_basin_input': spt_basin_input,
-            'spt_reach_id_input':spt_reach_id_input,
-            'rc_upload_toggle_switch':rc_upload_toggle_switch,
+            'spt_reach_id_input': spt_reach_id_input,
+            'rc_upload_toggle_switch': rc_upload_toggle_switch,
             'add_button': add_button,
             'watershed': watershed
         }

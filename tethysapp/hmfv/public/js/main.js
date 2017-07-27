@@ -214,3 +214,7 @@ function deleteRowData(submit_button, data, div_id) {
     }
     return null;
 }
+
+if ($('#server-toggle').val() === 'Geoserver') {
+
+}

@@ -47,7 +47,7 @@ var HMFV_MAP = (function() {
     /************************************************************************
      *                    PRIVATE FUNCTION DECLARATIONS
      *************************************************************************/
-    var find_by,init_vars,init_map,init_legend,init_slider,new_legend_item,indexOf,findByName,raiseLayer,lowerLayer,get_legend_json;
+    var find_by,init_vars,init_map,init_legend,init_slider,new_legend_item,indexOf,findByName,raiseLayer,lowerLayer,get_arclegend_json,get_geoegend_img;
 
     /************************************************************************
      *                    PRIVATE FUNCTION IMPLEMENTATIONS
@@ -74,28 +74,49 @@ var HMFV_MAP = (function() {
         layers = [base_layer];
 
         first_layer = layer_obj['list'][0]; //First layer out of the layers object
+        sub_folder_str = first_layer.layer.substring(0,first_layer.layer.indexOf('_')+'_'.length); //Modifying the layername
 
-        //Adding the first layer and source so that the source and layer can be updated dynamically
-        jQuery.each(first_layer.metadata,function(key,data){
-
+        if (service_url.indexOf('arcgis') >= 0) {
+            //Adding the first layer and source so that the source and layer can be updated dynamically
+            jQuery.each(first_layer.metadata, function (key, data) {
+                wms_source = new ol.source.ImageWMS({
+                    url: '',
+                    params: {
+                        LAYERS: data.id,
+                    },
+                    crossOrigin: 'Anonymous'
+                });
+                wms_layer = new ol.layer.Image({
+                    source: wms_source,
+                    name: data.name
+                });
+                sources.push(wms_source);
+                layers.push(wms_layer);
+            });
+        } else {
             wms_source = new ol.source.ImageWMS({
-                url:'',
-                params:{
-                    LAYERS:data.id,
+                url: '',
+                params: {
+                    FORMAT: 'image/png',
+                    VERSION: '1.1.0',
+                    LAYERS: '',
+                    STYLES: '',
                 },
                 crossOrigin: 'Anonymous'
             });
+
             wms_layer = new ol.layer.Image({
-                source:wms_source,
-                name:data.name
+                source: wms_source,
             });
             sources.push(wms_source);
             layers.push(wms_layer);
+        };
 
-        });
-
-        sub_folder_str = first_layer.layer.substring(0,first_layer.layer.indexOf('_')+'_'.length); //Modifying the layername
-        slider_url = service_url.replace("rest/","")+sub_folder_str; //Generating a generic layer url for the slider, so that the layers are updated as the slider moves.
+        if (service_url.indexOf('arcgis') >= 0) {
+            slider_url = service_url.replace("rest/", "") + sub_folder_str; //Generating a generic layer url for the slider, so that the layers are updated as the slider moves.
+        } else {
+            slider_url = service_url.replace("rest/workspaces/", "") + sub_folder_str.toLowerCase();
+        };
 
         view = new ol.View({
             center: [9111517, 3258918],
@@ -118,33 +139,49 @@ var HMFV_MAP = (function() {
         var layr_list;
 
         layr_list = map.getLayers();
-        get_legend_json();
 
-        for(var i= layr_list.getLength();i--;){
-            for(var j=legend_obj.layers.length;j--;){
-                if(layr_list.item(i).get('name') == legend_obj.layers[j].layerName){
-                    new_legend_item(layr_list.item(i),legend_obj.layers[j].legend[0].imageData); //Creating a legend item based on each item in the first layer
+        if (service_url.indexOf('arcgis') >= 0) {
+            get_arclegend_json();
+
+            for(var i= layr_list.getLength();i--;){
+                for(var j=legend_obj.layers.length;j--;){
+                    if(layr_list.item(i).get('name') == legend_obj.layers[j].layerName){
+                        new_legend_item(layr_list.item(i),legend_obj.layers[j].legend[0].imageData); //Creating a legend item based on each item in the first layer
+                    }
                 }
             }
-        }
+        } else {
+            get_geoegend_img = service_url.split('rest/workspaces/')[0]+'wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=10&HEIGHT=10&LAYER='+
+            service_url.split('rest/workspaces/')[1].replace('/',':')+first_layer.layer.toLowerCase()+'&style=raster'
 
+            for(var i= layr_list.getLength();i--;){
+                new_legend_item(layr_list.item(i),get_geoegend_img)
+            }
+        };
     };
-
 
 
     //Creating a dynamic legend item based on the layer
     new_legend_item = function(layer,img){
         var name = layer.get('name');
-        var div = "<li data-layerid='" + name + "'>" +
-            "<img src='"+"data:image/png;base64,"+img +"'>"+
-            "<span> " + name + "</span>" +
-            "<i class='glyphicon glyphicon-check lyr'></i> ";
-        $('ul.layerstack').prepend(div);
+        if (service_url.indexOf('arcgis') >= 0) {
+            var div = "<li data-layerid='" + name + "'>" +
+                "<img src='" + "data:image/png;base64," + img + "'>" +
+                "<span> " + name + "</span>" +
+                "<i class='glyphicon glyphicon-check lyr'></i> ";
+            $('ul.layerstack').prepend(div);
+        } else if (name !== 'BaseLayer') {
+            var div = "<li data-layerid='" + 'Floodmap' + "'>" +
+                "<img src='" + img + "'>" +
+                "<span> " + 'Floodmap' + "</span>" +
+                "<i class='glyphicon glyphicon-check lyr'></i> ";
+            $('ul.layerstack').prepend(div);
+        };
 
     };
 
     //Get the legend json based on the service folder
-    get_legend_json = function(){
+    get_arclegend_json = function(){
         $.ajax({
             url: service_url+first_layer.layer+'/MapServer/legend?f=json&callback=',
             type: 'GET',
@@ -152,15 +189,11 @@ var HMFV_MAP = (function() {
             dataType: 'json',
             success: function(result){
                 legend_obj = result;
-
             },
             error: function(result){
-                console.log(result);
             }
         });
-
     };
-
 
     indexOf = function(layers,layer){
         var length = layers.getLength();
@@ -226,12 +259,22 @@ var HMFV_MAP = (function() {
                 $( "#amount" ).val( ui.value ); //Get the value from the slider
                 var decimal_value = ui.value.toString().split(".").join("");
 
-                var url = slider_url+decimal_value+'/MapServer/WmsServer?'; //Set the url based on the slider value
+                if (service_url.indexOf('arcgis') >= 0) {
+                    var url = slider_url + decimal_value + '/MapServer/WmsServer?'; //Set the url based on the slider value
+                } else {
+                    var url = slider_url + decimal_value + '/wms';
+                }
 
-                sources.forEach(function(source){
-                    source.setUrl(url);
-                }); //This updates the map layer based on the slider value
-
+                if (service_url.indexOf('arcgis') >= 0) {
+                    sources.forEach(function(source){
+                        source.setUrl(url);
+                    });
+                } else {
+                    sources.forEach(function (source) {
+                        source.setUrl(url);
+                        source.updateParams({LAYERS: sub_folder_str.toLowerCase() + decimal_value})
+                    });
+                } //This updates the map layer based on the slider value
             }
         });
 
@@ -311,11 +354,22 @@ var HMFV_MAP = (function() {
 
                 var decimal_value = ui.value.toString().split(".").join("");
 
-                var url = slider_url+decimal_value+'/MapServer/WmsServer?';
+                if (service_url.indexOf('arcgis') >= 0) {
+                    var url = slider_url + decimal_value + '/MapServer/WmsServer?'; //Set the url based on the slider value
+                } else {
+                    var url = slider_url + decimal_value + '/wms';
+                }
 
-                sources.forEach(function(source){
-                    source.setUrl(url);
-                });
+                if (service_url.indexOf('arcgis') >= 0) {
+                    sources.forEach(function(source){
+                        source.setUrl(url);
+                    });
+                } else {
+                    sources.forEach(function (source) {
+                        source.setUrl(url);
+                        source.updateParams({LAYERS: sub_folder_str.toLowerCase() + decimal_value})
+                    });
+                } //This updates the map layer based on the slider value
                 $("#amount").val( ui.value );
             });
 
@@ -430,6 +484,7 @@ var HMFV_MAP = (function() {
                     range_length = result['map_forecast'].length;
                     $("label[for='amount']").text("Flood Date"); //Change the label to reflect the forecast
 
+                    console.log(result);
                     //Reconfigure the slider to handle the forecast
                     $( "#slider" ).slider({
                         value:1,
@@ -442,11 +497,22 @@ var HMFV_MAP = (function() {
                             $( "#amount" ).val(result['map_forecast'][ui.value - 1][0]);
                             var decimal_value = range_value.toString().split(".").join("");
 
-                            var url = slider_url+decimal_value+'/MapServer/WmsServer?';
+                            if (service_url.indexOf('arcgis') >= 0) {
+                                var url = slider_url + decimal_value + '/MapServer/WmsServer?'; //Set the url based on the slider value
+                            } else {
+                                var url = slider_url + decimal_value + '/wms';
+                            }
 
-                            sources.forEach(function(source){
-                                source.setUrl(url);
-                            });
+                            if (service_url.indexOf('arcgis') >= 0) {
+                                sources.forEach(function(source){
+                                    source.setUrl(url);
+                                });
+                            } else {
+                                sources.forEach(function (source) {
+                                    source.setUrl(url);
+                                    source.updateParams({LAYERS: sub_folder_str.toLowerCase() + decimal_value})
+                                });
+                            } //This updates the map layer based on the slider value
 
                         }
                     });
@@ -458,31 +524,32 @@ var HMFV_MAP = (function() {
                         $( "#amount" ).val(result['map_forecast'][ui.value - 1][0]); //The text below the slider
                         var decimal_value = range_value.toString().split(".").join("");
 
-                        var url = slider_url+decimal_value+'/MapServer/WmsServer?'; //Updating the url based on the slider value
+                        if (service_url.indexOf('arcgis') >= 0) {
+                            var url = slider_url + decimal_value + '/MapServer/WmsServer?'; //Set the url based on the slider value
+                        } else {
+                            var url = slider_url + decimal_value + '/wms';
+                        }
 
-                        sources.forEach(function(source){
-                            source.setUrl(url);
-                        });
+                        if (service_url.indexOf('arcgis') >= 0) {
+                            sources.forEach(function(source){
+                                source.setUrl(url);
+                            });
+                        } else {
+                            sources.forEach(function (source) {
+                                source.setUrl(url);
+                                source.updateParams({LAYERS: sub_folder_str.toLowerCase() + decimal_value})
+                            });
+                        } //This updates the map layer based on the slider value
                     });
-
 
                     $(".reload").removeClass("hidden");
                     $(".reload").click(function(){
                         location.reload();
                     }); //Reload the web browser if the user clicks return to the original depth
-
-
-
                 }
             });
-
-
         });
-
     });
-
-
-
 }()); // End of package wrapper
 // NOTE: that the call operator (open-closed parenthesis) is used to invoke the library wrapper
 // function immediately after being parsed.

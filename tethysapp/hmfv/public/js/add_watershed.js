@@ -96,28 +96,45 @@ var HMFV_ADD_WATERSHED = (function() {
         });
 
 
-        //Check if the ArcGIS server service folder exists
+        //Check if the  server service folder exists
         $("#service-folder-input").blur(function(){
             var service_folder = $("#service-folder-input").val();
             if (service_folder.substr(-1) !== "/") {
                 service_folder = service_folder.concat("/");
             }
-            $.ajax({
-                url: service_folder+'?f=json&callback=',
-                type: 'GET',
-                dataType: 'json',
-                success: function(result){
-                    if("services" in result){
-                        addSuccessMessage('Valid ArcGIS REST Service');
-                    }else{
+            if (service_folder.indexOf('arcgis') >= 0) {
+                $.ajax({
+                    url: service_folder + '?f=json&callback=',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (result) {
+                        if ("services" in result) {
+                            addSuccessMessage('Valid ArcGIS REST Service');
+                        } else {
+                            addErrorMessage("Please check your ArcGIS REST Service Folder Link!");
+                        }
+                    },
+                    error: function (result) {
                         addErrorMessage("Please check your ArcGIS REST Service Folder Link!");
                     }
-                },
-                error: function(result){
-                    addErrorMessage("Please check your ArcGIS REST Service Folder Link!");
-                }
-            });
-
+                });
+            } else {
+                $.ajax({
+                    url: service_folder + 'coveragestores.json',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result['coveragestores'] !== '') {
+                            addSuccessMessage('Valid GeoServer REST Service');
+                        } else {
+                            addErrorMessage("Please check your Geoserver REST Service Folder Link!");
+                        }
+                    },
+                    error: function (result) {
+                        addErrorMessage("Please check your GeoServer REST Service Folder Link!");
+                    }
+                });
+            };
         });
 
         //Add Watershed based on the input values

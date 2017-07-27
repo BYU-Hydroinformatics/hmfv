@@ -41,36 +41,65 @@ def get_wml_values(url):
 
 #Get all the layers for given ArcGIS server service folder
 def get_layers(url):
+    if "arcgis" in url:
+        layers_url = url+"?f=json" #Getting the results as a json object as it is easier to parse a json object
+        r = requests.get(layers_url)
+        json_obj = r.json()
 
-    layers_url = url+"?f=json" #Getting the results as a json object as it is easier to parse a json object
-    r = requests.get(layers_url)
-    json_obj = r.json()
+        layers = {'list':[]}
 
-    layers = {'list':[]}
+        #Looping through each layer in the service folder
+        for service in json_obj["services"]:
+            layer_list = service["name"].split("/")
+            layer = layer_list[1]
+            lyr_desc_url = url+'/'+layer+'/'+service['type']+'/?f=json'
+            lyr_req = requests.get(lyr_desc_url)
+            lyr_json_obj = lyr_req.json()
+            full_extent = lyr_json_obj["fullExtent"] #Get the layer extent
+            proj_id = full_extent["spatialReference"]["wkid"] #Get the Layer spatial reference
+            proj_str = 'epsg:'+str(proj_id)
+            in_proj = Proj(init=proj_str)
+            out_proj = Proj(init='epsg:3857')
 
-    #Looping through each layer in the service folder
-    for service in json_obj["services"]:
-        layer_list = service["name"].split("/")
-        layer = layer_list[1]
-        lyr_desc_url = url+'/'+layer+'/'+service['type']+'/?f=json'
-        lyr_req = requests.get(lyr_desc_url)
-        lyr_json_obj = lyr_req.json()
-        full_extent = lyr_json_obj["fullExtent"] #Get the layer extent
-        proj_id = full_extent["spatialReference"]["wkid"] #Get the Layer spatial reference
-        proj_str = 'epsg:'+str(proj_id)
-        in_proj = Proj(init=proj_str)
-        out_proj = Proj(init='epsg:3857')
+            #Reprojecting the extent as a precautionary measure. This normalizes the extents if each layer is in a different projection.
+            x1,y1 = full_extent["xmin"], full_extent["ymin"]
+            xmin,ymin = transform(in_proj, out_proj,x1,y1)
+            x2, y2 = full_extent["xmax"], full_extent["ymax"]
+            xmax,ymax = transform(in_proj, out_proj, x2, y2)
+            extent = [xmin, ymin, xmax, ymax]
 
-        #Reprojecting the extent as a precautionary measure. This normalizes the extents if each layer is in a different projection.
-        x1,y1 = full_extent["xmin"],full_extent["ymin"]
-        xmin,ymin = transform(in_proj,out_proj,x1,y1)
-        x2, y2 = full_extent["xmax"], full_extent["ymax"]
-        xmax,ymax = transform(in_proj,out_proj,x2,y2)
-        extent = [xmin,ymin,xmax,ymax]
+            metadata = lyr_json_obj["layers"]
+            layer_json = {"layer":layer,"extent":extent,"metadata":metadata} #Sending all the layer metadata as json object. This will make it easy to add the layer to the map.
+            layers['list'].append(layer_json)
 
-        metadata = lyr_json_obj["layers"]
-        layer_json = {"layer":layer,"extent":extent,"metadata":metadata} #Sending all the layer metadata as json object. This will make it easy to add the layer to the map.
-        layers['list'].append(layer_json)
+    else:
+        layers_url = url + 'coveragestores.json'
+        r = requests.get(layers_url)
+        json_obj = r.json()
+
+        layers = {'list':[]}
+
+        for service in json_obj['coverageStores']['coverageStore']:
+            layer = service["name"]
+            lyr_desc_url = url + 'coveragestores/' + layer + '/coverages/' + layer.lower() + '.json'
+            print(lyr_desc_url, '#############')
+            lyr_req = requests.get(lyr_desc_url)
+            lyr_json_obj = lyr_req.json()
+            full_extent = lyr_json_obj['coverage']['nativeBoundingBox']
+            proj_str = lyr_json_obj['coverage']['srs'].lower()
+            in_proj = Proj(init=proj_str)
+            out_proj = Proj(init='epsg:3857')
+
+            #Reprojecting the extent as a precautionary measure. This normalizes the extents if each layer is in a different projection.
+            x1,y1 = full_extent["minx"],full_extent["miny"]
+            xmin,ymin = transform(in_proj, out_proj,x1,y1)
+            x2, y2 = full_extent["maxx"], full_extent["maxy"]
+            xmax,ymax = transform(in_proj, out_proj, x2, y2)
+            extent = [xmin, ymin, xmax, ymax]
+
+            metadata = lyr_json_obj['coverage']['store']
+            layer_json = {"layer":layer,"extent":extent,"metadata":metadata}
+            layers['list'].append(layer_json)
 
     return layers
 
@@ -89,11 +118,10 @@ def get_time_step(layers):
 
     depths = sorted(depths) #So that they are ordered incrementally
 
-
     difference = [j-i for i,j in zip(depths[:-1],depths[1:])] #Finding the difference in the depths
     step = sum(difference)/float(len(difference)) #Averaging the depths. Hopefully the person who created the layers created them at a constant increment.
     max_depth = max(depths)
-    timestep = {"step":step,"max_depth":max_depth} #Returning the max depth and the time step. These parameters will govern the slider steps and the max value in the front end.
+    timestep = {"step":step,"max_depth":max_depth} #Returning the max depth and the time step. These parameters will govern the slider steps and the max value in the front end.\
 
     return timestep
 
