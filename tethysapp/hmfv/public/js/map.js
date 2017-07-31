@@ -107,6 +107,7 @@ var HMFV_MAP = (function() {
 
             wms_layer = new ol.layer.Image({
                 source: wms_source,
+                name: first_layer.metadata.name
             });
             sources.push(wms_source);
             layers.push(wms_layer);
@@ -171,7 +172,7 @@ var HMFV_MAP = (function() {
                 "<i class='glyphicon glyphicon-check lyr'></i> ";
             $('ul.layerstack').prepend(div);
         } else if (name !== 'BaseLayer') {
-            var div = "<li data-layerid='" + 'Floodmap' + "'>" +
+            var div = "<li data-layerid='" + name + "'>" +
                 "<img src='" + img + "'>" +
                 "<span> " + 'Floodmap' + "</span>" +
                 "<i class='glyphicon glyphicon-check lyr'></i> ";
@@ -447,6 +448,13 @@ var HMFV_MAP = (function() {
                         chart: {
                             type:'area',
                             zoomType: 'x'
+                        },
+                        plotOptions: {
+                            area: {
+                                marker: {
+                                    enabled: false
+                                }
+                            }
                         },
                         title: {
                             text: result['title'],

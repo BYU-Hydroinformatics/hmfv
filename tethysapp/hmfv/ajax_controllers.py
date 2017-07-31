@@ -251,7 +251,7 @@ def forecast(request):
                     flow = f[2] #If it does, then assign it the value of the corresponding depth
                     map_forecast.append([date,flow]) #A list of the forecast dates with their corresponsing depths
 
-        response = {'success': 'success',"data":ts_list,"title":spt_watershed,"unit":"cms","map_forecast":map_forecast}
+        response = {'success': 'success',"data":ts_list,"title":spt_watershed.replace('_', ' ').upper() + ' - ' + spt_basin.replace('_', ' ').upper(),"unit":"cms","map_forecast":map_forecast}
         return JsonResponse(response)
 
 

@@ -82,7 +82,6 @@ def get_layers(url):
         for service in json_obj['coverageStores']['coverageStore']:
             layer = service["name"]
             lyr_desc_url = url + 'coveragestores/' + layer + '/coverages/' + layer.lower() + '.json'
-            print(lyr_desc_url, '#############')
             lyr_req = requests.get(lyr_desc_url)
             lyr_json_obj = lyr_req.json()
             full_extent = lyr_json_obj['coverage']['nativeBoundingBox']
