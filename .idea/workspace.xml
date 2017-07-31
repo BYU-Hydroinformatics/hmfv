@@ -3,8 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="37fe942c-f6f0-4294-94dd-4d64f97eea1a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tethysapp/hmfv/ajax_controllers.py" afterPath="$PROJECT_DIR$/tethysapp/hmfv/ajax_controllers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tethysapp/hmfv/controllers.py" afterPath="$PROJECT_DIR$/tethysapp/hmfv/controllers.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tethysapp/hmfv/public/js/map.js" afterPath="$PROJECT_DIR$/tethysapp/hmfv/public/js/map.js" />
     </list>
     <ignored path=".idea/dataSources.local.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,7 +26,7 @@
       <file leaf-file-name="controllers.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/controllers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.666667">
+            <state vertical-scroll-proportion="-37.5">
               <caret line="135" column="100" selection-start-line="135" selection-start-column="100" selection-end-line="135" selection-end-column="100" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
@@ -39,8 +38,8 @@
       <file leaf-file-name="app.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.703704">
-              <caret line="41" column="61" selection-start-line="41" selection-start-column="61" selection-end-line="41" selection-end-column="61" />
+            <state vertical-scroll-proportion="-5.4814816">
+              <caret line="33" column="41" selection-start-line="33" selection-start-column="33" selection-end-line="33" selection-end-column="41" />
               <folding />
             </state>
           </provider>
@@ -56,11 +55,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ajax_controllers.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ajax_controllers.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/ajax_controllers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.37937742">
-              <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+            <state vertical-scroll-proportion="-4.648148">
+              <caret line="217" column="95" selection-start-line="217" selection-start-column="95" selection-end-line="217" selection-end-column="95" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
               </folding>
@@ -68,11 +67,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="map.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="map.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/map.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="486" column="38" selection-start-line="486" selection-start-column="38" selection-end-line="486" selection-end-column="38" />
+            <state vertical-scroll-proportion="7.033074">
+              <caret line="482" column="87" selection-start-line="482" selection-start-column="87" selection-end-line="482" selection-end-column="87" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -83,7 +82,7 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-71.40741">
+            <state vertical-scroll-proportion="-107.77778">
               <caret line="194" column="26" selection-start-line="194" selection-start-column="22" selection-end-line="194" selection-end-column="26" />
               <folding />
             </state>
@@ -93,8 +92,8 @@
       <file leaf-file-name="utilities.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/utilities.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+            <state vertical-scroll-proportion="-8.333333">
+              <caret line="30" column="18" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="18" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
               </folding>
@@ -105,7 +104,7 @@
       <file leaf-file-name="add_watershed.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/add_watershed.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-26.407408">
+            <state vertical-scroll-proportion="-115.55556">
               <caret line="214" column="43" selection-start-line="214" selection-start-column="43" selection-end-line="214" selection-end-column="43" />
               <folding />
             </state>
@@ -115,7 +114,7 @@
       <file leaf-file-name="manage_watersheds.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/manage_watersheds.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-32.51852">
+            <state vertical-scroll-proportion="-141.11111">
               <caret line="260" column="25" selection-start-line="260" selection-start-column="23" selection-end-line="260" selection-end-column="25" />
               <folding />
             </state>
@@ -170,10 +169,10 @@
         <option value="$PROJECT_DIR$/tethysapp/hmfv/templates/hmfv/add_watershed.html" />
         <option value="$PROJECT_DIR$/tethysapp/hmfv/templates/hmfv/home.html" />
         <option value="$PROJECT_DIR$/tethysapp/hmfv/utilities.py" />
-        <option value="$PROJECT_DIR$/tethysapp/hmfv/public/js/map.js" />
         <option value="$PROJECT_DIR$/tethysapp/hmfv/public/js/add_watershed.js" />
         <option value="$PROJECT_DIR$/tethysapp/hmfv/controllers.py" />
         <option value="$PROJECT_DIR$/tethysapp/hmfv/ajax_controllers.py" />
+        <option value="$PROJECT_DIR$/tethysapp/hmfv/public/js/map.js" />
       </list>
     </option>
   </component>
@@ -944,50 +943,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/utilities.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/manage_watersheds.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-32.51852">
-          <caret line="260" column="25" selection-start-line="260" selection-start-column="23" selection-end-line="260" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/map.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="486" column="38" selection-start-line="486" selection-start-column="38" selection-end-line="486" selection-end-column="38" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-71.40741">
-          <caret line="194" column="26" selection-start-line="194" selection-start-column="22" selection-end-line="194" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.703704">
-          <caret line="41" column="61" selection-start-line="41" selection-start-column="61" selection-end-line="41" selection-end-column="61" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/templates/hmfv/map.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-17.958334">
@@ -996,17 +951,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-107.77778">
+          <caret line="194" column="26" selection-start-line="194" selection-start-column="22" selection-end-line="194" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/add_watershed.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-26.407408">
+        <state vertical-scroll-proportion="-115.55556">
           <caret line="214" column="43" selection-start-line="214" selection-start-column="43" selection-end-line="214" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/manage_watersheds.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-141.11111">
+          <caret line="260" column="25" selection-start-line="260" selection-start-column="23" selection-end-line="260" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.4814816">
+          <caret line="33" column="41" selection-start-line="33" selection-start-column="33" selection-end-line="33" selection-end-column="41" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/controllers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.666667">
+        <state vertical-scroll-proportion="-37.5">
           <caret line="135" column="100" selection-start-line="135" selection-start-column="100" selection-end-line="135" selection-end-column="100" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
@@ -1014,12 +993,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/utilities.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.333333">
+          <caret line="30" column="18" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/ajax_controllers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37937742">
-          <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+        <state vertical-scroll-proportion="-4.648148">
+          <caret line="217" column="95" selection-start-line="217" selection-start-column="95" selection-end-line="217" selection-end-column="95" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tethysapp/hmfv/public/js/map.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="7.033074">
+          <caret line="482" column="87" selection-start-line="482" selection-start-column="87" selection-end-line="482" selection-end-column="87" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>

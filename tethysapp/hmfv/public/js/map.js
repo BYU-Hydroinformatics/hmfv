@@ -1,7 +1,7 @@
 /*****************************************************************************
  * FILE:    Manage Watersheds JS
  * DATE:    10 March 2017
- * AUTHOR: Sarva Pulla
+ * AUTHOR: Sarva Pulla & Michael Souffront
  * COPYRIGHT: (c) Brigham Young University 2017
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
@@ -352,7 +352,7 @@ var HMFV_MAP = (function() {
         if($("label[for='amount']").text() == "Flood Depth (meter):"){
             $("#slider").on("slidechange", function(event, ui) {
 
-                var decimal_value = ui.value.toString().split(".").join("");
+                var decimal_value = ui.value.toString().split(".")[0];
 
                 if (service_url.indexOf('arcgis') >= 0) {
                     var url = slider_url + decimal_value + '/MapServer/WmsServer?'; //Set the url based on the slider value
@@ -477,14 +477,20 @@ var HMFV_MAP = (function() {
                         },
                         series: [{
                             data: result['data'],
-                            name: "Streamflow Prediction Tool Forecast"
+                            name: "Streamflow Prediction Tool Forecast",
+                            pointInterval: 3000 * 3600,
+                            pointStart: Date.UTC(
+                                Number($("#forecast_date_start").val().substring(0,4)),
+                                Number($("#forecast_date_start").val().substring(4,6))-1,
+                                Number($("#forecast_date_start").val().substring(6,8)),
+                                Number($("#forecast_date_start").val().substring(9,11))
+                            )
                         }]
 
                     });
                     range_length = result['map_forecast'].length;
                     $("label[for='amount']").text("Flood Date"); //Change the label to reflect the forecast
 
-                    console.log(result);
                     //Reconfigure the slider to handle the forecast
                     $( "#slider" ).slider({
                         value:1,
@@ -495,7 +501,7 @@ var HMFV_MAP = (function() {
                         slide: function( event, ui ) {
                             var range_value = result['map_forecast'][ui.value - 1][1];
                             $( "#amount" ).val(result['map_forecast'][ui.value - 1][0]);
-                            var decimal_value = range_value.toString().split(".").join("");
+                            var decimal_value = range_value.toString().split(".")[1];
 
                             if (service_url.indexOf('arcgis') >= 0) {
                                 var url = slider_url + decimal_value + '/MapServer/WmsServer?'; //Set the url based on the slider value
@@ -522,7 +528,7 @@ var HMFV_MAP = (function() {
 
                         var range_value = result['map_forecast'][ui.value - 1][1]; //Slider value based on the forecast date
                         $( "#amount" ).val(result['map_forecast'][ui.value - 1][0]); //The text below the slider
-                        var decimal_value = range_value.toString().split(".").join("");
+                        var decimal_value = range_value.toString().split(".")[1];
 
                         if (service_url.indexOf('arcgis') >= 0) {
                             var url = slider_url + decimal_value + '/MapServer/WmsServer?'; //Set the url based on the slider value
