@@ -112,15 +112,6 @@ def add_watershed(request):
                                      icon_append='glyphicon glyphicon-home',
                                      ) #Input for the Watershed Display Name
 
-    # server_toggle_switch = ToggleSwitch(display_text='Add Geospatial Server',
-    #                                     name='server-toggle',
-    #                                     on_label='Arcserver',
-    #                                     off_label='Geoserver',
-    #                                     on_style='info',
-    #                                     off_style='info',
-    #                                     initial=True,
-    #                                     size='large')
-
     service_folder_input = TextInput(display_text='Server REST Service Directory',
                                      name='service-folder-input',
                                      placeholder='http://geoserver.byu.edu/arcgis/rest/services/Nepal_Western/',
@@ -142,7 +133,7 @@ def add_watershed(request):
                                      icon_append='glyphicon glyphicon-tag',
                                      append='For retrieving forecasts') #Input for the streamflow prediction tool reach id
 
-    #Note: Currently there are no validations to check if the Streamflow Prediction tool watershed,basin, and the reach id exist or not. Any validations will need to be done on the front end.
+    #Note: Currently there are no validations to check if the Streamflow Prediction tool watershed, basin, and the reach id exist or not. Any validations will need to be done on the front end.
 
     add_button = Button(display_text='Add Watershed',
                         icon='glyphicon glyphicon-plus',

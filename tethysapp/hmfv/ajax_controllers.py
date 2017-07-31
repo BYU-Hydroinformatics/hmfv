@@ -39,23 +39,45 @@ def watershed_add(request):
             firstline = True
             rc_list = []
             for row in data:
-                rc_json = {} #Initialize an empty json dictionary. This allows you store the values as one big json dictionary.
-                if firstline:
-                   firstline = False
-                   #header = row.split(",")
-                   if ('Flow,Depth') not in row: #Change this code if you want to change how strict you would like to be with the headers
-                       error = "Please check the headers in the csv file."
+                if '\r' in row:
+                    datacsvmac = row.split('\r')
+                    for row1 in datacsvmac:
+                        rc_json = {} #Initialize an empty json dictionary. This allows you store the values as one big json dictionary.
+                        if firstline:
+                           firstline = False
+                           #header = row.split(",")
+                           if ('Flow,Depth') not in row1: #Change this code if you want to change how strict you would like to be with the headers
+                               error = "Please check the headers in the csv file."
 
-                       response = {"error":error}
-                       break
-                   continue
-                features = row.split(",")
-                #Converting the csv fields to float
-                flow = float(features[0])
-                depth = float(features[1])
-                rc_json["f"] = flow
-                rc_json["d"] = depth
-                rc_list.append(rc_json)
+                               response = {"error":error}
+                               break
+                           continue
+                        features = row1.split(",")
+                        #Converting the csv fields to float
+                        flow = float(features[0])
+                        depth = float(features[1])
+                        rc_json["f"] = flow
+                        rc_json["d"] = depth
+                        rc_list.append(rc_json)
+
+                else:
+                    rc_json = {} #Initialize an empty json dictionary. This allows you store the values as one big json dictionary.
+                    if firstline:
+                       firstline = False
+                       #header = row.split(",")
+                       if ('Flow,Depth') not in row: #Change this code if you want to change how strict you would like to be with the headers
+                           error = "Please check the headers in the csv file."
+
+                           response = {"error":error}
+                           break
+                       continue
+                    features = row.split(",")
+                    #Converting the csv fields to float
+                    flow = float(features[0])
+                    depth = float(features[1])
+                    rc_json["f"] = flow
+                    rc_json["d"] = depth
+                    rc_list.append(rc_json)
 
             response = {"data":rc_list,"success":"Success"}
 
