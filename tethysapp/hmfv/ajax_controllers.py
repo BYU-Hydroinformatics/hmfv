@@ -10,7 +10,6 @@ import json, ast
 from utilities import *
 import StringIO
 
-from .app import HimalayaFloodMapVisualizer as app
 from model import Watershed
 from sqlalchemy.orm.exc import ObjectDeletedError
 from sqlalchemy import update
@@ -20,6 +19,9 @@ def watershed_add(request):
     """
     AJAX Controller for adding the watershed
     """
+
+    from .app import HimalayaFloodMapVisualizer as app
+
     response = {}
     if request.is_ajax() and request.method == 'POST':
 
@@ -99,6 +101,9 @@ def watershed_delete(request):
     """
     Controller for deleting a watershed.
     """
+
+    from .app import HimalayaFloodMapVisualizer as app
+
     if request.is_ajax() and request.method == 'POST':
         # get/check information from AJAX request
         info = request.POST
@@ -124,6 +129,8 @@ def watershed_update(request):
     """
     Controller for updating a watershed.
     """
+
+    from .app import HimalayaFloodMapVisualizer as app
 
     response = {}
 
@@ -200,6 +207,8 @@ def forecast(request):
     """
     Controller for retrieving the forecast from the streamflow prediction tool
     """
+
+    from .app import HimalayaFloodMapVisualizer as app
 
     response = {}
 

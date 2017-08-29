@@ -4,6 +4,10 @@ import urllib2, json
 from pyproj import Proj, transform
 from itertools import tee, islice, chain, izip
 
+from .model import Communities
+from geoalchemy2.functions import ST_AsText, ST_X, ST_Y, ST_Transform
+from tethys_sdk.gizmos import MVLayer
+
 #Check if the user is superuser or staff. Only the superuser or staff have the permission to add and manage watersheds.
 def user_permission_test(user):
     return user.is_superuser or user.is_staff
@@ -77,7 +81,7 @@ def get_layers(url):
         r = requests.get(layers_url)
         json_obj = r.json()
 
-        layers = {'list':[]}
+        layers = {'list':[], 'communities': []}
 
         for service in json_obj['coverageStores']['coverageStore']:
             layer = service["name"]
@@ -99,6 +103,65 @@ def get_layers(url):
             metadata = lyr_json_obj['coverage']['store']
             layer_json = {"layer":layer,"extent":extent,"metadata":metadata}
             layers['list'].append(layer_json)
+
+            from .app import HimalayaFloodMapVisualizer as app
+            session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
+            session = session_maker()
+
+            communities = session.query(Communities).filter(Communities.watershed == layer.split('_')[0].lower(),
+                                                            Communities.flood_index.endswith(layer.split('_')[1]))
+
+            features = []
+            lat_list = []
+            lon_list = []
+
+            for com in communities:
+                lon = com.point_x
+                lat = com.point_y
+                lon_list.append(lon)
+                lat_list.append(lat)
+                com_feature = {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [lon, lat]
+                    },
+                    'properties': {
+                        'watershed' : com.watershed,
+                        'flood_index' : com.flood_index,
+                        'name' : com.name,
+                    }
+                }
+
+                features.append(com_feature)
+
+
+            session.close()
+
+            geojson_points = {
+                'type': 'FeatureCollection',
+                'crs': {
+                    'type': 'name',
+                    'properties': {
+                        'name': 'EPSG:3857'
+                    }
+                },
+                'features': features
+            }
+
+            delta = 0.01
+            if lon_list != [] and lat_list != []:
+                geojson_layer = {
+                    'source':'GeoJSON',
+                    'options': geojson_points,
+                    'legend_title': 'Affected Communities',
+                    'legend_extent': [min(lon_list)-delta, min(lat_list)-delta, max(lon_list)+delta,
+                                      max(lat_list)+delta],
+                    'legend_extent_projection': 'EPSG:3857',
+                    'feature_selection': True
+                }
+
+                layers['communities'].append(geojson_layer)
 
     return layers
 

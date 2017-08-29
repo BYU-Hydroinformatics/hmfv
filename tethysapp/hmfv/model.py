@@ -1,10 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Float, String
-
-from .app import HimalayaFloodMapVisualizer as app
-
-session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
-session = session_maker()
+from geoalchemy2 import Geometry
 
 Base = declarative_base()
 
@@ -25,13 +21,19 @@ class Watershed(Base):
     spt_reach = Column(Integer)
     rc_json = Column(String)
 
-    def __init__(self, display_name, service_folder, spt_watershed,spt_basin, spt_reach, rc_json):
-        """
-        Constructor for the table
-        """
-        self.display_name = display_name
-        self.service_folder = service_folder
-        self.spt_watershed = spt_watershed
-        self.spt_basin = spt_basin
-        self.spt_reach = spt_reach
-        self.rc_json = rc_json
+
+class Communities(Base):
+    """
+    Communities DB model
+    """
+
+    __tablename__ = 'communities'
+
+    # Columns
+    id = Column(Integer, primary_key=True)
+    watershed = Column(String)
+    flood_index = Column(String)
+    name = Column(String)
+    point_x = Column(Float)
+    point_y = Column(Float)
+    geometry = Column(Geometry('POINT'))

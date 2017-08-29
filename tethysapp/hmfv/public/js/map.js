@@ -21,10 +21,6 @@ var HMFV_MAP = (function() {
         projection,
         base_layer,
         first_layer,
-        flood_map,
-        land_cover,
-        flood,
-        land,
         layer_obj,
         legend_obj,
         max_depth,
@@ -33,6 +29,7 @@ var HMFV_MAP = (function() {
         layers,
         view,
         map,
+        points_layer,
         m_layer_options,
         range_length,
         service_url,
@@ -109,8 +106,24 @@ var HMFV_MAP = (function() {
                 source: wms_source,
                 name: first_layer.metadata.name
             });
+
+            var json = layer_obj['communities'][4].options;
+
+            var geojson_source = new ol.source.Vector({
+                features: (new ol.format.GeoJSON()).readFeatures(json)
+            });
+
+            points_layer = new ol.layer.Vector({
+                source: geojson_source,
+                name: 'Affected Areas',
+
+            });
+
+            console.log(wms_layer);
+            console.log(points_layer);
             sources.push(wms_source);
             layers.push(wms_layer);
+            layers.push(points_layer);
         };
 
         if (service_url.indexOf('arcgis') >= 0) {
@@ -323,8 +336,8 @@ var HMFV_MAP = (function() {
      *                  INITIALIZATION / CONSTRUCTOR
      *************************************************************************/
 
-// Initialization: jQuery function that gets called when
-// the DOM tree finishes loading
+    // Initialization: jQuery function that gets called when
+    // the DOM tree finishes loading
     $(function() {
         // Initialize Global Variables
         init_map();
@@ -562,6 +575,72 @@ var HMFV_MAP = (function() {
                     }); //Reload the web browser if the user clicks return to the original depth
                 }
             });
+        });
+    });
+
+    $(function() {
+        // Create new Overlay with the #popup element
+        var popup = new ol.Overlay({
+            element: document.getElementById('popup')
+        });
+
+        var select_interaction = new ol.interaction.Select({
+            layers: [points_layer],
+        });
+
+        map.addInteraction(select_interaction);
+
+        // Add the popup overlay to the map
+        map.addOverlay(popup);
+
+        // When selected, call function to display properties
+        select_interaction.getFeatures().on('change:length', function(e)
+        {
+            var popup_element = popup.getElement();
+
+            if (e.target.getArray().length > 0)
+            {
+                // this means there is at least 1 feature selected
+                var selected_feature = e.target.item(0); // 1st feature in Collection
+
+                // Get coordinates of the point to set position of the popup
+                var coordinates = selected_feature.getGeometry().getCoordinates();
+
+                var popup_content = '<div class="dam-popup">' +
+                                        '<p><b>' + selected_feature.get('name') + '</b></p>' +
+                                        '<table class="table  table-condensed">' +
+                                            '<tr>' +
+                                                '<th>Comunidad:</th>' +
+                                                '<td>' + selected_feature.get('name') + '</td>' +
+                                            '</tr>' +
+                                            '<tr>' +
+                                                '<th>Cuenca:</th>' +
+                                                '<td>' + selected_feature.get('watershed') + '</td>' +
+                                            '</tr>' +
+                                        '</table>' +
+                                    '</div>';
+
+                // Clean up last popup and reinitialize
+                $(popup_element).popover('destroy');
+
+                // Delay arbitrarily to wait for previous popover to
+                // be deleted before showing new popover.
+                setTimeout(function() {
+                    popup.setPosition(coordinates);
+
+                    $(popup_element).popover({
+                      'placement': 'top',
+                      'animation': true,
+                      'html': true,
+                      'content': popup_content
+                    });
+
+                    $(popup_element).popover('show');
+                }, 500);
+            } else {
+                // remove pop up when selecting nothing on the map
+                $(popup_element).popover('destroy');
+            }
         });
     });
 }()); // End of package wrapper

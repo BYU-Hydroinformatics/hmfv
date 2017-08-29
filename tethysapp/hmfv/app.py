@@ -68,7 +68,8 @@ class HimalayaFloodMapVisualizer(TethysAppBase):
         ps_settings = (PersistentStoreDatabaseSetting(name='main_db',
                                                       description='primary database',
                                                       initializer='hmfv.init_stores.init_main_db',
-                                                      required=True
+                                                      required=True,
+                                                      spatial=True
                                                       ),
                   )
 

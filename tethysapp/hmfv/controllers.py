@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from tethys_sdk.gizmos import (Button, MessageBox, SelectInput, TextInput, ToggleSwitch, TimeSeries)
 
-from .app import HimalayaFloodMapVisualizer as app
 from .model import Watershed
+from geoalchemy2.functions import *
 from utilities import *
 import requests, ast, json
 from django.http import HttpResponse, JsonResponse, Http404
@@ -15,7 +15,7 @@ def home(request):
     """
 
     #Show available watersheds
-    # session = SessionMaker()
+    from .app import HimalayaFloodMapVisualizer as app
 
     session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
     session = session_maker()
@@ -44,7 +44,8 @@ def map(request):
 
     info = request.GET
     watershed_id = info.get('watershed_select') #Get the watershed id
-    # session = SessionMaker() #Connect to the Database
+
+    from .app import HimalayaFloodMapVisualizer as app
 
     session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
     session = session_maker()
@@ -157,7 +158,7 @@ def manage_watersheds(request):
     Controller for the app manage watershed page
     """
 
-    # session = SessionMaker() #Connecting to the database
+    from .app import HimalayaFloodMapVisualizer as app
 
     session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
     session = session_maker()
@@ -181,11 +182,12 @@ def manage_watersheds(request):
 @user_passes_test(user_permission_test)
 def manage_watersheds_table(request):
     """
-       Controller for the app manage watershed page
-       """
-    #Initialize session
-    # session = SessionMaker()
+    Controller for the app manage watershed page
+    """
 
+    from .app import HimalayaFloodMapVisualizer as app
+
+    #Initialize session
     session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
     session = session_maker()
 
@@ -218,14 +220,15 @@ def edit_watershed(request):
     """
     Controller for the app manage_watersheds page.
     """
+
+    from .app import HimalayaFloodMapVisualizer as app
+
     if request.method == 'GET':
         info = request.GET
         # Get/Check information from AJAX request
         watershed_id = info.get('watershed_id')
 
         # initialize session
-        # session = SessionMaker()
-
         session_maker = app.get_persistent_store_database('main_db', as_sessionmaker=True)
         session = session_maker()
 
