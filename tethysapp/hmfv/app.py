@@ -7,7 +7,7 @@ class HimalayaFloodMapVisualizer(TethysAppBase):
     Tethys app class for Himalaya Flood Map Visualizer.
     """
     # Note: All of these parameters can be changed through the Site Admin Portal --> Tethys Apps --> Installed Apps
-    name = 'Himalaya Flood Map Visualizer'
+    name = 'Herramienta de Prediccion de Inundaciones Fluviales'
     index = 'hmfv:home'
     icon = 'hmfv/images/flood.png'
     package = 'hmfv'

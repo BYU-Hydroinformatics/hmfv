@@ -107,20 +107,28 @@ var HMFV_MAP = (function() {
                 name: first_layer.metadata.name
             });
 
-            var json = layer_obj['communities'][4].options;
-
-            var geojson_source = new ol.source.Vector({
-                features: (new ol.format.GeoJSON()).readFeatures(json)
-            });
+            var point_style = [
+                new ol.style.Style({
+                    image: new ol.style.Circle({
+                        radius: 6,
+                        stroke: new ol.style.Stroke({
+                            color: 'blue',
+                            width: 2
+                        }),
+                        fill: new ol.style.Fill({
+                            color: 'yellow'
+                        })
+                    })
+                })
+            ];
 
             points_layer = new ol.layer.Vector({
-                source: geojson_source,
+                source: new ol.source.Vector(),
+                style: point_style,
                 name: 'Affected Areas',
 
             });
 
-            console.log(wms_layer);
-            console.log(points_layer);
             sources.push(wms_source);
             layers.push(wms_layer);
             layers.push(points_layer);
@@ -184,10 +192,16 @@ var HMFV_MAP = (function() {
                 "<span> " + name + "</span>" +
                 "<i class='glyphicon glyphicon-check lyr'></i> ";
             $('ul.layerstack').prepend(div);
-        } else if (name !== 'BaseLayer') {
+        } else if (name !== 'BaseLayer' && name !== 'Affected Areas') {
             var div = "<li data-layerid='" + name + "'>" +
                 "<img src='" + img + "'>" +
                 "<span> " + 'Floodmap' + "</span>" +
+                "<i class='glyphicon glyphicon-check lyr'></i> ";
+            $('ul.layerstack').prepend(div);
+        } else if (name == 'Affected Areas') {
+            var div = "<li data-layerid='" + name + "'>" +
+                "<img src='" + img + "'>" +
+                "<span> " + 'Communities' + "</span>" +
                 "<i class='glyphicon glyphicon-check lyr'></i> ";
             $('ul.layerstack').prepend(div);
         };
@@ -287,6 +301,29 @@ var HMFV_MAP = (function() {
                     sources.forEach(function (source) {
                         source.setUrl(url);
                         source.updateParams({LAYERS: sub_folder_str.toLowerCase() + decimal_value})
+                    });
+
+                    var json, geojson_source;
+                    for (var i = 0; i <= layer_obj['communities'].length; ++i) {
+                        if (layer_obj['communities'][i] &&
+                            layer_obj['communities'][i]['options']['features'][0]['properties']['flood_index'].
+                            endsWith(decimal_value)) {
+                            json = layer_obj['communities'][i].options;
+
+                            geojson_source = new ol.source.Vector({
+                                features: (new ol.format.GeoJSON()).readFeatures(json),
+                            });
+
+                            break;
+                        } else {
+                            geojson_source = new ol.source.Vector();
+                        }
+                    };
+
+                    layers.forEach(function (layer) {
+                        if (layer.getProperties().name == 'Affected Areas') {
+                            layer.setSource(geojson_source);
+                        }
                     });
                 } //This updates the map layer based on the slider value
             }
@@ -577,6 +614,10 @@ var HMFV_MAP = (function() {
             });
         });
     });
+
+    /************************************************************************
+     *                  Popup window event
+     *************************************************************************/
 
     $(function() {
         // Create new Overlay with the #popup element
