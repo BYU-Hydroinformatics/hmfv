@@ -22,9 +22,9 @@ def get_forecast_dates(url):
     #Creating the date options. Modifying the string so that it says Noon and Midnight.
     for date in dates:
         if len(date) > 10:
-            display_date = date[6:8] + '/' + date[4:6] + '/' + date[:4] + ' Noon'
+            display_date = date[6:8] + '/' + date[4:6] + '/' + date[:4] + ' Medio dia'
         else:
-            display_date = date[6:8] + '/' + date[4:6] + '/' + date[:4] + ' Midnight'
+            display_date = date[6:8] + '/' + date[4:6] + '/' + date[:4] + ' Media noche'
 
         date_options.append([display_date, date])
 

@@ -3,7 +3,7 @@
 {% load tethys_gizmos %}
 
 {% block app_content %}
-<h1>Select a Watershed</h1>
+<h1>Seleccione una Cuenca</h1>
 
 {% if watersheds_length > 0 %}
     <form id="watershedForm" action="{% url 'hmfv:map' %}" method="get">
@@ -11,18 +11,18 @@
         {% gizmo select_input watershed_select %}
         <div class="btn-group ">
             <button name="submit-go-to-map" class="btn btn-success" role="button" form="watershedForm" submit="True" id="submit-go-to-map">
-                <span class="glyphicon glyphicon-play"></span>View Watershed
+                <span class="glyphicon glyphicon-play"></span>Ver Cuenca
             </button>
         </div>
     </form>
     {% if user.is_superuser or user.is_staff %}
-    <p class="help-block">Don't see the watershed you want? Add one
-        <a href="{% url 'hmfv:add-watershed' %}">here</a>.</p>
+    <p class="help-block">¿No ve ninguna cuenca? Agregue una
+        <a href="{% url 'hmfv:add-watershed' %}">aquí</a>.</p>
     {% endif %}
 {% else %}
-<div class="alert alert-warning" role="alert">Sorry. There appear to be no watersheds in the database at this time.</div>
+<div class="alert alert-warning" role="alert">No hay ninguna cuenca en la base de datos.</div>
     {% if user.is_superuser or user.is_staff %}
-    <p>To add one click <a href="{% url 'hmfv:add-watershed' %}">here.</a>
+    <p>Para aguegar una haga Click <a href="{% url 'hmfv:add-watershed' %}">Aquí.</a>
     {% endif %}
 {% endif %}
 

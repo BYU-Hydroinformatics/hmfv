@@ -195,13 +195,13 @@ var HMFV_MAP = (function() {
         } else if (name !== 'BaseLayer' && name !== 'Affected Areas') {
             var div = "<li data-layerid='" + name + "'>" +
                 "<img src='" + img + "'>" +
-                "<span> " + 'Floodmap' + "</span>" +
+                "<span> " + 'Inundacion' + "</span>" +
                 "<i class='glyphicon glyphicon-check lyr'></i> ";
             $('ul.layerstack').prepend(div);
         } else if (name == 'Affected Areas') {
             var div = "<li data-layerid='" + name + "'>" +
                 "<img src='" + img + "'>" +
-                "<span> " + 'Communities' + "</span>" +
+                "<span> " + 'Comunidades' + "</span>" +
                 "<i class='glyphicon glyphicon-check lyr'></i> ";
             $('ul.layerstack').prepend(div);
         };
@@ -325,6 +325,7 @@ var HMFV_MAP = (function() {
                             layer.setSource(geojson_source);
                         }
                     });
+                    
                 } //This updates the map layer based on the slider value
             }
         });
@@ -400,7 +401,7 @@ var HMFV_MAP = (function() {
         var sliderInterval = {};
 
         //Reconfigure the slider text based on the forecast
-        if($("label[for='amount']").text() == "Flood Depth (meter):"){
+        if($("label[for='amount']").text() == "Profundidad (metros):"){
             $("#slider").on("slidechange", function(event, ui) {
 
                 var decimal_value = ui.value.toString().split(".")[0];
@@ -420,6 +421,30 @@ var HMFV_MAP = (function() {
                         source.setUrl(url);
                         source.updateParams({LAYERS: sub_folder_str.toLowerCase() + decimal_value})
                     });
+
+                    var json, geojson_source;
+                    for (var i = 0; i <= layer_obj['communities'].length; ++i) {
+                        if (layer_obj['communities'][i] &&
+                            layer_obj['communities'][i]['options']['features'][0]['properties']['flood_index'].
+                            endsWith(decimal_value)) {
+                            json = layer_obj['communities'][i].options;
+
+                            geojson_source = new ol.source.Vector({
+                                features: (new ol.format.GeoJSON()).readFeatures(json),
+                            });
+
+                            break;
+                        } else {
+                            geojson_source = new ol.source.Vector();
+                        }
+                    };
+
+                    layers.forEach(function (layer) {
+                        if (layer.getProperties().name == 'Affected Areas') {
+                            layer.setSource(geojson_source);
+                        }
+                    });
+
                 } //This updates the map layer based on the slider value
                 $("#amount").val( ui.value );
             });
@@ -442,7 +467,7 @@ var HMFV_MAP = (function() {
 
                 var sliderVal = $("#slider").slider("value");
                 sliderInterval = setInterval(function() {
-                    if($("label[for='amount']").text() == "Flood Depth (meter):"){
+                    if($("label[for='amount']").text() == "Profundidad (metros):"){
                         sliderVal += timestep;
                         $("#slider").slider("value", sliderVal);
                         if (sliderVal===max_depth) sliderVal=0;
@@ -535,7 +560,7 @@ var HMFV_MAP = (function() {
                         },
                         series: [{
                             data: result['data'],
-                            name: "Streamflow Prediction Tool Forecast",
+                            name: "Este Pronostico proviene de la Herramienta de Prediccion de Caudales",
                             pointInterval: 3000 * 3600,
                             pointStart: Date.UTC(
                                 Number($("#forecast_date_start").val().substring(0,4)),
@@ -547,7 +572,7 @@ var HMFV_MAP = (function() {
 
                     });
                     range_length = result['map_forecast'].length;
-                    $("label[for='amount']").text("Flood Date"); //Change the label to reflect the forecast
+                    $("label[for='amount']").text("Fecha del Pronostico"); //Change the label to reflect the forecast
 
                     //Reconfigure the slider to handle the forecast
                     $( "#slider" ).slider({
@@ -576,6 +601,30 @@ var HMFV_MAP = (function() {
                                     source.setUrl(url);
                                     source.updateParams({LAYERS: sub_folder_str.toLowerCase() + decimal_value})
                                 });
+
+                                var json, geojson_source;
+                                for (var i = 0; i <= layer_obj['communities'].length; ++i) {
+                                    if (layer_obj['communities'][i] &&
+                                        layer_obj['communities'][i]['options']['features'][0]['properties']['flood_index'].
+                                        endsWith(decimal_value)) {
+                                        json = layer_obj['communities'][i].options;
+
+                                        geojson_source = new ol.source.Vector({
+                                            features: (new ol.format.GeoJSON()).readFeatures(json),
+                                        });
+
+                                        break;
+                                    } else {
+                                        geojson_source = new ol.source.Vector();
+                                    }
+                                };
+
+                                layers.forEach(function (layer) {
+                                    if (layer.getProperties().name == 'Affected Areas') {
+                                        layer.setSource(geojson_source);
+                                    }
+                                });
+
                             } //This updates the map layer based on the slider value
 
                         }
@@ -603,6 +652,30 @@ var HMFV_MAP = (function() {
                                 source.setUrl(url);
                                 source.updateParams({LAYERS: sub_folder_str.toLowerCase() + decimal_value})
                             });
+
+                            var json, geojson_source;
+                            for (var i = 0; i <= layer_obj['communities'].length; ++i) {
+                                if (layer_obj['communities'][i] &&
+                                    layer_obj['communities'][i]['options']['features'][0]['properties']['flood_index'].
+                                    endsWith(decimal_value)) {
+                                    json = layer_obj['communities'][i].options;
+
+                                    geojson_source = new ol.source.Vector({
+                                        features: (new ol.format.GeoJSON()).readFeatures(json),
+                                    });
+
+                                    break;
+                                } else {
+                                    geojson_source = new ol.source.Vector();
+                                }
+                            };
+
+                            layers.forEach(function (layer) {
+                                if (layer.getProperties().name == 'Affected Areas') {
+                                    layer.setSource(geojson_source);
+                                }
+                            });
+
                         } //This updates the map layer based on the slider value
                     });
 

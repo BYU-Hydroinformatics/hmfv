@@ -26,7 +26,7 @@ def home(request):
     for watershed in watersheds:
         watershed_list.append(("%s (Streamflow Prediction Reach %s)" % (watershed.display_name,watershed.spt_reach),watershed.id)) #Generating the options for the dropdown
 
-    watershed_select = SelectInput(display_text='Select Watershed',
+    watershed_select = SelectInput(display_text='Seleccione una Cuenca',
                                    name='watershed_select',
                                    options=watershed_list,
                                    multiple=False, ) #Generating the dropdown with the available watersheds
@@ -67,21 +67,27 @@ def map(request):
     #Get the available dates for the watershed using Streamflow Prediction tool api
     available_dates_url = 'https://tethys.byu.edu/apps/streamflow-prediction-tool/api/GetAvailableDates/?watershed_name={0}&subbasin_name={1}&reach_id={2}'.format(spt_watershed,spt_basin,spt_reach)
     forecast_dates = get_forecast_dates(available_dates_url) #Processing the url to generate dates dynamically. See utilities.py
-    forecast_date_picker = SelectInput(display_text='Forecast Date Start',
+    forecast_date_picker = SelectInput(display_text='Fecha Inicial de Pronostico',
                                              name='forecast_date_start',
                                              multiple=False,
                                              options=forecast_dates,
                                              initial=forecast_dates[0]) #Dropdown with the options to select a date
 
     #Options for the Statistic type
-    stat_options = [('Mean','mean'),('High Resolution','high_res'),('Standard Deviation Range Upper','std_dev_range_upper'),('Standard Deviation Range Lower','std_dev_range_lower'),('Outer Range Upper','outer_range_upper'),('Outer Range Lower','outer_range_lower')]
-    forecast_stat_type = SelectInput(display_text='Forecast Stat Type',
+    stat_options = [('Pronostico Promedio','mean'),
+                    ('Alta Resolucion','high_res'),
+                    ('Desviacion Estandar Rango Superior','std_dev_range_upper'),
+                    ('Desviacion Estandar Rango Inferior','std_dev_range_lower'),
+                    ('Pronostico Maximo','outer_range_upper'),
+                    ('Pronostico Minimo','outer_range_lower')]
+
+    forecast_stat_type = SelectInput(display_text='Tipo de Pronostico Estadistico',
                                              name='forecast_stat_type',
                                              multiple=False,
                                              options=stat_options,
                                              initial=stat_options[0]) #Dropdown for selecting the statistic type
 
-    get_forecast = Button(display_text='View Flood Forecast',
+    get_forecast = Button(display_text='Ver Pronostico de Caudales',
                           name='submit-get-forecast',
                           attributes={'id':'submit-get-forecast'},
                           ) #Get Forecast Button
@@ -107,28 +113,28 @@ def add_watershed(request):
     Controller for the app add watershed page
     """
 
-    watershed_name_input = TextInput(display_text='Watershed Display Name',
+    watershed_name_input = TextInput(display_text='Nombre de la Cuenca',
                                      name='watershed-name-input',
-                                     placeholder='e.g.: Kathmandu Flood Map',
+                                     placeholder='e.g.: Cuenca del Rio Haina',
                                      icon_append='glyphicon glyphicon-home',
                                      ) #Input for the Watershed Display Name
 
-    service_folder_input = TextInput(display_text='Server REST Service Directory',
+    service_folder_input = TextInput(display_text='URL del Servidor Geoespacial (Accepta Geoserver o ArcGIS)',
                                      name='service-folder-input',
-                                     placeholder='http://geoserver.byu.edu/arcgis/rest/services/Nepal_Western/',
+                                     placeholder='http://geoserver.byu.edu/rest/workspaces/haina/',
                                      icon_append='glyphicon glyphicon-link',) #input for the ArcGIS rest service folder
 
-    spt_watershed_input = TextInput(display_text='Streamflow Prediction Tool Watershed',
+    spt_watershed_input = TextInput(display_text='Nombre del Area de Interes en la Herramienta de Prediccion de Caudales',
                                      name='spt-watershed-name-input',
-                                     placeholder='e.g.: Nepal West',
+                                     placeholder='e.g.: dominican_republic',
                                      icon_append='glyphicon glyphicon-tag',) #Input for the streamflow prediction tool watershed name
 
-    spt_basin_input = TextInput(display_text='Streamflow Prediction Tool Subbasin',
+    spt_basin_input = TextInput(display_text='Nombre del Area de Interes en la Herramienta de Prediccion de Caudales',
                                     name='spt-basin-name-input',
-                                    placeholder='e.g.: Kandra',
+                                    placeholder='e.g.: haina',
                                     icon_append='glyphicon glyphicon-tag', ) #Input for the streamflow prediction tool basin input
 
-    spt_reach_id_input = TextInput(display_text='Streamflow Prediction Tool Reachid',
+    spt_reach_id_input = TextInput(display_text='Numero de Identificacion del Tramo de Rio a Monitorear',
                                      name='spt-reach-id-input',
                                      placeholder='e.g.: 45',
                                      icon_append='glyphicon glyphicon-tag',
@@ -136,7 +142,7 @@ def add_watershed(request):
 
     #Note: Currently there are no validations to check if the Streamflow Prediction tool watershed, basin, and the reach id exist or not. Any validations will need to be done on the front end.
 
-    add_button = Button(display_text='Add Watershed',
+    add_button = Button(display_text='Agregar',
                         icon='glyphicon glyphicon-plus',
                         style='success',
                         name='submit-add-watershed',
@@ -165,10 +171,10 @@ def manage_watersheds(request):
     num_watersheds = session.query(Watershed).count() #Get the number of records in the database
     session.close() #Close the database
     edit_modal = MessageBox(name='edit_watershed_modal',
-                            title='Edit Watershed',
-                            message='Loading ...',
-                            dismiss_button='Nevermind',
-                            affirmative_button='Save Changes',
+                            title='Editar Cuenca',
+                            message='Cargando ...',
+                            dismiss_button='Salir sin Salvar',
+                            affirmative_button='Salvar Cambios',
                             affirmative_attributes='id=edit_modal_submit',
                             width=500) #Modal that shows up when you are editing the watershed
     context = {
@@ -201,11 +207,11 @@ def manage_watersheds_table(request):
 
     #Buttons to navigate the pages
 
-    prev_button = Button(display_text='Previous',
+    prev_button = Button(display_text='Anterior',
                          name='prev_button',
                          attributes={'class': 'nav_button'})
 
-    next_button = Button(display_text='Next',
+    next_button = Button(display_text='Siguiente',
                          name='next_button',
                          attributes={'class': 'nav_button'})
 
@@ -236,39 +242,39 @@ def edit_watershed(request):
 
         #Same as rendering the add watershed page. Now assigning values from the database.
 
-        watershed_name_input = TextInput(display_text='Watershed Display Name',
+        watershed_name_input = TextInput(display_text='Nombre de la Cuenca',
                                          name='watershed-name-input',
-                                         placeholder='e.g.: Kathmandu Flood Map',
+                                         placeholder='e.g.: Cuenca del Rio Haina',
                                          icon_append='glyphicon glyphicon-home',
                                          initial=watershed.display_name,
                                          )
 
-        service_folder_input = TextInput(display_text='ArcGIS Server REST Service Directory',
+        service_folder_input = TextInput(display_text='URL del Servidor Geoespacial (Accepta Geoserver o ArcGIS)',
                                          name='service-folder-input',
-                                         placeholder='http://geoserver.byu.edu/arcgis/rest/services/Nepal_Western/',
+                                         placeholder='http://geoserver.byu.edu/rest/workspaces/haina/',
                                          icon_append='glyphicon glyphicon-link',
                                          initial=watershed.service_folder)
 
-        spt_watershed_input = TextInput(display_text='Streamflow Prediction Tool Watershed',
+        spt_watershed_input = TextInput(display_text='Nombre del Area de Interes en la Herramienta de Prediccion de Caudales',
                                         name='spt-watershed-name-input',
-                                        placeholder='e.g.: Nepal West',
+                                        placeholder='e.g.: dominican_republic',
                                         icon_append='glyphicon glyphicon-tag',
                                         initial=watershed.spt_watershed)
 
-        spt_basin_input = TextInput(display_text='Streamflow Prediction Tool Subbasin',
+        spt_basin_input = TextInput(display_text='Nombre del Area de Interes en la Herramienta de Prediccion de Caudales',
                                     name='spt-basin-name-input',
-                                    placeholder='e.g.: Kandra',
+                                    placeholder='e.g.: haina',
                                     icon_append='glyphicon glyphicon-tag',
                                     initial=watershed.spt_basin)
 
-        spt_reach_id_input = TextInput(display_text='Streamflow Prediction Tool Reachid',
+        spt_reach_id_input = TextInput(display_text='Numero de Identificacion del Tramo de Rio a Monitorear',
                                        name='spt-reach-id-input',
                                        placeholder='e.g.: 45',
                                        icon_append='glyphicon glyphicon-tag',
                                        append='For retrieving forecasts',
                                        initial=watershed.spt_reach)
 
-        rc_upload_toggle_switch = ToggleSwitch(display_text='Re-Upload Rating Curve?',
+        rc_upload_toggle_switch = ToggleSwitch(display_text='Re-Subir Curva de Clasificacion de Caudales?',
                                                 name='rc-upload-toggle',
                                                 on_label='Yes',
                                                 off_label='No',
@@ -276,7 +282,7 @@ def edit_watershed(request):
                                                 off_style='danger',
                                                 initial=False, ) #Toggle switch in case you want to re-upload the rating curve file
 
-        add_button = Button(display_text='Add Watershed',
+        add_button = Button(display_text='Agregar Cuenca',
                             icon='glyphicon glyphicon-plus',
                             style='success',
                             name='submit-add-watershed',

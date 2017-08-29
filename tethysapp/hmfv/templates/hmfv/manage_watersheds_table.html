@@ -3,21 +3,21 @@
 <div>
     <table class="table table-striped table-condensed">
         <thead>
-            <th>Edit</th>
-            <th>Delete</th>
-            <th>Flood Map Watershed Display Name</th>
-            <th>Streamflow Prediction Tool Watershed</th>
+            <th>Editar</th>
+            <th>Borrar</th>
+            <th>Nombre de la Cuenca</th>
+            <th>Nombre del Area de Interes en la Herramienta de Prediccion de Caudales</th>
 
         </thead>
         <tbody>
         {% for watershed in watersheds %}
             <tr>
                 <td class="table-button"><div class=" btn-group"><a name="submit-edit-watershed" class="btn btn-warning submit-edit-watershed" data-toggle="modal" data-target="#edit_watershed_modal" role="button">
-                    <span class="glyphicon glyphicon-pencil"></span> Edit </a>
+                    <span class="glyphicon glyphicon-pencil"></span> Editar </a>
                     </div>
                 </td>
                 <td class="table-button"><div class=" btn-group"><a name="submit-delete-watershed" class="btn btn-danger submit-delete-watershed" role="button">
-                    <span class="glyphicon glyphicon-remove"></span> Delete </a>
+                    <span class="glyphicon glyphicon-remove"></span> Borrar </a>
                     </div>
                 </td>
                 <td class="watershed-name" data-watershed_id="{{watershed.id}}">{{watershed.display_name}}</td>
