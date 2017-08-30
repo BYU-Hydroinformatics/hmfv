@@ -325,7 +325,7 @@ var HMFV_MAP = (function() {
                             layer.setSource(geojson_source);
                         }
                     });
-                    
+
                 } //This updates the map layer based on the slider value
             }
         });
