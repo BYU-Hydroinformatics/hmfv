@@ -129,7 +129,7 @@ def add_watershed(request):
                                      placeholder='e.g.: dominican_republic',
                                      icon_append='glyphicon glyphicon-tag',) #Input for the streamflow prediction tool watershed name
 
-    spt_basin_input = TextInput(display_text='Nombre del Area de Interes en la Herramienta de Prediccion de Caudales',
+    spt_basin_input = TextInput(display_text='Nombre de la Cuenca en la Herramienta de Prediccion de Caudales',
                                     name='spt-basin-name-input',
                                     placeholder='e.g.: haina',
                                     icon_append='glyphicon glyphicon-tag', ) #Input for the streamflow prediction tool basin input
@@ -261,7 +261,7 @@ def edit_watershed(request):
                                         icon_append='glyphicon glyphicon-tag',
                                         initial=watershed.spt_watershed)
 
-        spt_basin_input = TextInput(display_text='Nombre del Area de Interes en la Herramienta de Prediccion de Caudales',
+        spt_basin_input = TextInput(display_text='Nombre de la Cuenca en la Herramienta de Prediccion de Caudales',
                                     name='spt-basin-name-input',
                                     placeholder='e.g.: haina',
                                     icon_append='glyphicon glyphicon-tag',
