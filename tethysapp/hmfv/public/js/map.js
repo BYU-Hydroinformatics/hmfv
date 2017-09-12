@@ -584,7 +584,7 @@ var HMFV_MAP = (function() {
                         slide: function( event, ui ) {
                             var range_value = result['map_forecast'][ui.value - 1][1];
                             $( "#amount" ).val(result['map_forecast'][ui.value - 1][0]);
-                            var decimal_value = range_value.toString().split(".")[1];
+                            var decimal_value = range_value.toString();
 
                             if (service_url.indexOf('arcgis') >= 0) {
                                 var url = slider_url + decimal_value + '/MapServer/WmsServer?'; //Set the url based on the slider value
@@ -635,7 +635,7 @@ var HMFV_MAP = (function() {
 
                         var range_value = result['map_forecast'][ui.value - 1][1]; //Slider value based on the forecast date
                         $( "#amount" ).val(result['map_forecast'][ui.value - 1][0]); //The text below the slider
-                        var decimal_value = range_value.toString().split(".")[1];
+                        var decimal_value = range_value.toString();
 
                         if (service_url.indexOf('arcgis') >= 0) {
                             var url = slider_url + decimal_value + '/MapServer/WmsServer?'; //Set the url based on the slider value
