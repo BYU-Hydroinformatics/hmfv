@@ -13,8 +13,8 @@ class HimalayaFloodMapVisualizer(TethysAppBase):
     package = 'hmfv'
     root_url = 'hmfv'
     color = '#27afc4' #Change this to change the primary color of the website
-    description = 'Flood map viewer that works in conjunction with Streamflow Prediction Tool API.'
-    tags = 'Flood'
+    description = 'La Herramienta de Prediccion de Inundaciones muestra posibles inundaciones y las comunidades afectadas por estas. Esta herramienta es derivada de la Herramienta de Prediccion de Caudales.'
+    tags = ''
     enable_feedback = False
     feedback_emails = []
 
